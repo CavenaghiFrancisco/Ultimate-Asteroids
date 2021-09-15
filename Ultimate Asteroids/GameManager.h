@@ -1,5 +1,5 @@
 #pragma once
-
+#include "Menu.h"
 
 enum class STATES { MENU, EXIT, GAME, SHOP };
 
@@ -8,6 +8,7 @@ private:
 	STATES currentState = STATES::MENU;
 	bool isThisStateStarting = true;
 	bool isPlaying;
+	Menu* menu;
 public:
 	GameManager();
 	~GameManager();

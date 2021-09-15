@@ -6,7 +6,11 @@ Intro::Intro() {
 	introLogoAudio = LoadMusicStream("hoho1.mp3");
 	logoTexture = LoadTexture("gamingdummies.png");
 	logo = new Textures();
+	logoTexture.width = 600;
+	logoTexture.height = 700;
+	logo->SetTextureData(logoTexture, (screenWidth / 2) - (logoTexture.width / 2), (screenHeight / 2) - (logoTexture.height / 2), 600, 700);
 	GM = new GameManager();
+	isOn = true;
 }
 
 Intro::~Intro() {
@@ -20,14 +24,17 @@ void Intro::StartIntro() {
 	bool isPlaying;
 	int timePlayed;
 	int totalTime = GetMusicTimeLength(introLogoAudio);
-	logo->SetTextureData(logoTexture, screenWidth / 2 - logo->GetWidth() / 2, screenHeight / 2 - logo->GetHeight() / 2, 600, 700);
-	DrawTextureRec(logo->GetTexture(), logo->GetFrameRec(), logo->GetPosition(), WHITE);
+	
 	while (GetMusicTimePlayed(introLogoAudio)<4) {
 		BeginDrawing();
 		int timePlayed = GetMusicTimePlayed(introLogoAudio);
 		UpdateMusicStream(introLogoAudio);
-		ClearBackground(BLACK);
+		ClearBackground(BLACK);		
+		DrawTextureRec(logo->GetTexture(), logo->GetFrameRec(), logo->GetPosition(), WHITE);
 		EndDrawing();
 	}
-	GM->StartGameManager();
+	while (!WindowShouldClose() && isOn) {
+			GM->StartGameManager();
+			isOn = GM->QuitGame();
+	}
 }

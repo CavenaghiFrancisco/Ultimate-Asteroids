@@ -2,6 +2,7 @@
 #include <iostream>
 
 
+
 GameManager::GameManager() {
 	isPlaying = true;
 }
@@ -40,6 +41,15 @@ bool GameManager::QuitGame() {
 void GameManager::UpdateState(STATES states) {
 	switch (GetState()) {
 	case STATES::MENU:
+		if (isThisStateStarting) {
+			menu = new Menu();
+			isThisStateStarting = false;
+		}
+		if (!(menu->GetInited())) {
+			menu->Init();
+		}
+		menu->Update();
+		menu->Draw();
 		break;
 	case STATES::GAME:
 		break;

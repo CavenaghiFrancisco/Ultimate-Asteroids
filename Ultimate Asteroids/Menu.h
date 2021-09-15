@@ -10,8 +10,14 @@ private:
 	bool goToOptions;
 	bool exitGame;
 	int option;
+	float scrolling;
+	Rectangle button0Area;
 	Texture2D backgroundTexture;
 	Textures* background;
+	Texture2D buttonTexture;
+	Textures* button0;
+	Texture2D buttonPushedTexture;
+	Textures* button0Pushed;
 public:
 	const float screenWidth = 1366;
 	const float screenHeight = 768;
