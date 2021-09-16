@@ -18,6 +18,7 @@ private:
 	Textures* button0;
 	Texture2D buttonPushedTexture;
 	Textures* button0Pushed;
+	Font font;
 public:
 	const float screenWidth = 1366;
 	const float screenHeight = 768;

@@ -52,6 +52,14 @@ void GameManager::UpdateState(STATES states) {
 		menu->Draw();
 		break;
 	case STATES::GAME:
+		if (isThisStateStarting) {
+			game = new Game();
+			isThisStateStarting = false;
+		}
+		if (!(game->GetInited())) {
+			game->InitGame();
+		}
+		game->UpdateDrawFrame();
 		break;
 	case STATES::SHOP:
 		break;

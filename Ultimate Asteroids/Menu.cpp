@@ -9,14 +9,15 @@ Menu::~Menu() {
 
 void Menu::Init() {
 	SetTargetFPS(60);
+	font = LoadFont("resources/fonts/pixantiqua.png");
 	backgroundTexture = LoadTexture("background1.png");
 	backgroundTexture.width = GetScreenWidth();
 	backgroundTexture.height = GetScreenHeight();
 	//button0Area = { 525,320,320,120 };
-	button0Area = { (screenWidth / 2) - (buttonTexture.width / 2), (screenHeight / 2) - (buttonTexture.height / 2),410,200 };
 	buttonTexture = LoadTexture("button.png");
 	buttonTexture.width = 410;
 	buttonTexture.height = 200;
+	button0Area = { (screenWidth / 2) - (buttonTexture.width / 2)+40, (screenHeight / 2) - (buttonTexture.height / 2)+30,410-80,200-60 };
 	buttonPushedTexture = LoadTexture("button_pushed.png");
 	buttonTexture.width = 400;
 	buttonPushedTexture.height = 200;
@@ -35,9 +36,8 @@ void Menu::Input() {
 }
 
 void Menu::Update() {
-	scrolling -= 0.4f;
+	scrolling -= 0.5f;
 	if (scrolling <= -backgroundTexture.width * 2) scrolling = 0;
-
 }
 
 void Menu::Draw() {
@@ -45,12 +45,14 @@ void Menu::Draw() {
 	ClearBackground(RAYWHITE);
 	DrawTextureEx(backgroundTexture, { scrolling, 0 }, 0.0f, 2.0f, WHITE);
 	DrawTextureEx(backgroundTexture, { backgroundTexture.width * 2 + scrolling, 0 }, 0.0f, 2.0f, WHITE);
-	DrawRectangleRec(button0Area, RED);
+	/*DrawRectangleRec(button0Area, RED);*/
 	if (CheckCollisionPointRec(GetMousePosition(), button0Area)) {
 		DrawTextureRec(button0->GetTexture(), button0->GetFrameRec(), button0->GetPosition(), WHITE);
+		DrawText("PLAY", 590,350, 70, SKYBLUE);
 	}
 	else {
 		DrawTextureRec(button0Pushed->GetTexture(), button0Pushed->GetFrameRec(), button0Pushed->GetPosition(), WHITE);
+		DrawText("PLAY", 590, 350, 70, DARKGRAY);
 	}
 	EndDrawing();
 }
