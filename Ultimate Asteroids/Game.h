@@ -37,6 +37,7 @@ public:
 	void DrawGame();         // Draw game (one frame)
 	void UnloadGame();       // Unload game
 	void UpdateDrawFrame();  // Update and Draw (one frame)
+	
 };
 
 

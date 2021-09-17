@@ -2,8 +2,6 @@
 #include <math.h>
 
 
-#define PLAYER_BASE_SIZE    20.0f
-#define PLAYER_SPEED        300.0f
 #define PLAYER_MAX_SHOOTS   3
 
 #define METEORS_SPEED       20
@@ -183,28 +181,28 @@ void Game::UpdateGame() {
             // Player logic: movement
             player->UpdatePosition();
 
-            // Collision logic: player vs walls
-            //if (player->GetPosition().x > screenWidth + player->GetRadius()) player->SetPositionX().x = -(player->GetRadius());
-            //else if (player->GetPosition().x < -(player->GetRadius())) player->GetPosition().x = screenWidth + player->GetRadius();
-            //if (player.position.y > (screenHeight + player->GetRadius())) player.position.y = -(player->GetRadius());
-            //else if (player.position.y < -(player->GetRadius())) player.position.y = screenHeight + player->GetRadius();
+            //Collision logic: player vs walls
+            if (player->GetPosition().x > screenWidth + player->GetRadius()) player->SetPositionX(-(player->GetRadius()));
+            else if (player->GetPosition().x < -(player->GetRadius())) player->SetPositionX(screenWidth + player->GetRadius());
+            if (player->GetPosition().y > (screenHeight + player->GetRadius())) player->SetPositionY(-(player->GetRadius()));
+            else if (player->GetPosition().y < -(player->GetRadius())) player->SetPositionY(screenHeight + player->GetRadius());
 
-            //// Player shoot logic
-            //if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-            //    if (Vector2Length(Vector2Subtract(GetMousePosition(), player.position)) > 30.0f) {
-            //        player.rotation = Vector2Angle(player.position, GetMousePosition()) + 90;
-            //    }
-            //    for (int i = 0; i < PLAYER_MAX_SHOOTS; i++) {
-            //        if (!shoot[i].active) {
-            //            shoot[i].position = { player->GetPosition().x + (float)sin(player.rotation * DEG2RAD) * (player->GetRadius()), player.position.y - (float)cos(player.rotation * DEG2RAD) * (player->GetRadius()) };
-            //            shoot[i].active = true;
-            //            shoot[i].speed.x = 1.5 * (float)sin(player.rotation * DEG2RAD) * PLAYER_SPEED;
-            //            shoot[i].speed.y = 1.5 * (float)cos(player.rotation * DEG2RAD) * PLAYER_SPEED;
-            //            shoot[i].rotation = player.rotation;
-            //            break;
-            //        }
-            //    }
-            //}
+            // Player shoot logic
+            if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+                if (player->Vector2Length(player->Vector2Subtract(GetMousePosition(), player->GetPosition())) > 30.0f) {
+                    player->SetRotation(player->Vector2Angle(player->GetPosition(), GetMousePosition()) + 90);
+                }
+                for (int i = 0; i < PLAYER_MAX_SHOOTS; i++) {
+                    if (!shoot[i].active) {
+                        shoot[i].position = { player->GetPosition().x + (float)sin(player->GetRotation() * DEG2RAD) * (player->GetRadius()), player->GetPosition().y - (float)cos(player->GetRotation() * DEG2RAD) * (player->GetRadius()) };
+                        shoot[i].active = true;
+                        shoot[i].speed.x = 1.5 * (float)sin(player->GetRotation() * DEG2RAD) * player->playerSpeed;
+                        shoot[i].speed.y = 1.5 * (float)cos(player->GetRotation() * DEG2RAD) * player->playerSpeed;
+                        shoot[i].rotation = player->GetRotation();
+                        break;
+                    }
+                }
+            }
 
             // Shoot life timer
             for (int i = 0; i < PLAYER_MAX_SHOOTS; i++) {
@@ -247,19 +245,17 @@ void Game::UpdateGame() {
             }
 
             // Collision logic: player vs meteors
-           /* player.collider = { player->GetPosition().x , player.position.y , 12 };
 
             for (int a = 0; a < MAX_BIG_METEORS; a++) {
-                if (CheckCollisionCircles({ player.collider.x, player.collider.y }, player->GetRadius(), bigMeteor[a].position, bigMeteor[a].radius) && bigMeteor[a].active) gameOver = true;
+                if (CheckCollisionCircles({ player->GetPosition().x, player->GetPosition().y }, player->GetRadius(), bigMeteor[a].position, bigMeteor[a].radius) && bigMeteor[a].active) gameOver = true;
             }
 
             for (int a = 0; a < MAX_MEDIUM_METEORS; a++) {
-                if (CheckCollisionCircles({ player.collider.x, player.collider.y }, player->GetRadius(), mediumMeteor[a].position, mediumMeteor[a].radius) && mediumMeteor[a].active) gameOver = true;
+                if (CheckCollisionCircles({ player->GetPosition().x,  player->GetPosition().y }, player->GetRadius(), mediumMeteor[a].position, mediumMeteor[a].radius) && mediumMeteor[a].active) gameOver = true;
             }
-            r
             for (int a = 0; a < MAX_SMALL_METEORS; a++) {
-                if (CheckCollisionCircles({ player.collider.x, player.collider.y }, player->GetRadius(), smallMeteor[a].position, smallMeteor[a].radius) && smallMeteor[a].active) gameOver = true;
-            }*/
+                if (CheckCollisionCircles({ player->GetPosition().x,  player->GetPosition().y }, player->GetRadius(), smallMeteor[a].position, smallMeteor[a].radius) && smallMeteor[a].active) gameOver = true;
+            }
 
             // Meteors logic: big meteors
             for (int i = 0; i < MAX_BIG_METEORS; i++) {
