@@ -1,6 +1,8 @@
 #pragma once
 #include "Textures.h"
 #include "Player.h"
+#include "Shoot.h"
+
 
 
 class Game {
@@ -10,6 +12,7 @@ private:
 	bool replay;
 	bool isPaused;
 	Player* player;
+	Shoot* shoots[5];
 public:
 	const int screenWidth = 1366;
 	const int screenHeight = 768;
@@ -19,18 +22,6 @@ public:
 	float windowReSizeHeight = currentScreenHeight / screenHeight;
 	Game();
 	~Game();
-	/*void Init();
-	void Input();
-	void Update();
-	void Draw();
-	void DeInit();
-	
-	bool GetPause();
-	void SetPause(bool value);
-	bool RePlay();
-	void SetReplay();
-	bool ExitGameGoToMenu();
-	void SetGameGoToMenu();*/
 	bool GetInited();
 	void InitGame();         // Initialize game
 	void UpdateGame();       // Update game (one frame)

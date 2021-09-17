@@ -149,6 +149,7 @@
     <ClCompile Include="Intro.cpp" />
     <ClCompile Include="Menu.cpp" />
     <ClCompile Include="Player.cpp" />
+    <ClCompile Include="Shoot.cpp" />
     <ClCompile Include="Textures.cpp" />
     <ClCompile Include="Ultimate Asteroids.cpp" />
   </ItemGroup>
@@ -158,6 +159,7 @@
     <ClInclude Include="Intro.h" />
     <ClInclude Include="Menu.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="Shoot.h" />
     <ClInclude Include="Textures.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -10,7 +10,25 @@ private:
     bool active;
     Color color;
 public:
-	int playerMaxShoots = 5;
-   
+    const float screenWidth = 1366;
+    const float screenHeight = 768;
+    Shoot();
+    ~Shoot();
+    Vector2 GetPosition();
+    void SetPositionX(float _positionx);
+    void SetPositionY(float _positiony);
+    Vector2 GetSpeed();
+    void SetSpeedX(float _speedx);
+    void SetSpeedY(float _speedy);
+    float GetRadius();
+    void SetRadius(float _radius);
+    float GetRotation();
+    void SetRotation(float _rotation);
+    int GetLifeSpawn();
+    void SetLifeSpawn(float _lifespawn);
+    bool GetActive();
+    void SetActive(float _active);
+    void LifeTimer();
+    void Shot();
 };
 
