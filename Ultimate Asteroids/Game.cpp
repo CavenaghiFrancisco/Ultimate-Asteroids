@@ -6,7 +6,7 @@
 const int maxBigMeteors = 1;
 const int maxMediumMeteors = maxBigMeteors * 2;
 const int maxSmallMeteors = maxMediumMeteors * 2;
-const int meteorSpeed = 20;
+const int meteorSpeed = 30;
 struct Meteor {
     Vector2 position;
     Vector2 speed;
@@ -100,6 +100,7 @@ void Game::InitGame() {
         bigMeteor[i].speed = { (float)velx * GetFrameTime(), (float)vely * GetFrameTime() };
         bigMeteor[i].radius = 60;
         bigMeteor[i].active = true;
+        bigMeteor[i].rotation = GetRandomValue(0,340);
         bigMeteor[i].color = BLUE;
     }
 
@@ -109,6 +110,7 @@ void Game::InitGame() {
         mediumMeteor[i].radius = 40;
         mediumMeteor[i].active = false;
         mediumMeteor[i].color = BLUE;
+        mediumMeteor[i].rotation = GetRandomValue(0, 340);
     }
 
     for (int i = 0; i < maxSmallMeteors; i++) {
@@ -117,6 +119,7 @@ void Game::InitGame() {
         smallMeteor[i].radius = 20;
         smallMeteor[i].active = false;
         smallMeteor[i].color = BLUE;
+        smallMeteor[i].rotation = GetRandomValue(0, 340);
     }
 
     midMeteorsCount = 0;
@@ -141,12 +144,19 @@ void Game::InitGame() {
     smallMeteorsTexture.height = smallMeteor->radius;
 }
 
+void Game::InputGame() {
+    if (victory) {
+        if (IsKeyPressed(KEY_ENTER)) {
+            goToMenu = true;
+        }
+    }
+}
+
 
 
 void Game::UpdateGame() {
     if (!gameOver) {
         if (IsKeyPressed('P')) pause = !pause;
-
         if (!pause) {
 
             scrolling -= 0.5f;
@@ -182,157 +192,159 @@ void Game::UpdateGame() {
                         shoots[i]->SetRotation(player->GetRotation());
                         break;
                     };
-                        
-                    }
+
                 }
             }
 
-        // Shoot life timer
-        for (int i = 0; i < player->playerMaxShoots; i++) {
-            shoots[i]->LifeTimer();
-        }
 
-        // Shot logic
-        for (int i = 0; i < player->playerMaxShoots; i++) {
-            shoots[i]->Shot();
-        }
-
-        
-
-        // Collision logic: player vs meteors
-
-        for (int a = 0; a < maxBigMeteors; a++) {
-            if (CheckCollisionCircles({ player->GetPosition().x, player->GetPosition().y }, player->GetRadius(), bigMeteor[a].position, bigMeteor[a].radius) && bigMeteor[a].active) gameOver = true;
-        }
-
-        for (int a = 0; a < maxMediumMeteors; a++) {
-            if (CheckCollisionCircles({ player->GetPosition().x,  player->GetPosition().y }, player->GetRadius(), mediumMeteor[a].position, mediumMeteor[a].radius) && mediumMeteor[a].active) gameOver = true;
-        }
-        for (int a = 0; a < maxSmallMeteors; a++) {
-            if (CheckCollisionCircles({ player->GetPosition().x,  player->GetPosition().y }, player->GetRadius(), smallMeteor[a].position, smallMeteor[a].radius) && smallMeteor[a].active) gameOver = true;
-        }
-
-        // Meteors logic: big meteors
-        for (int i = 0; i < maxBigMeteors; i++) {
-            if (bigMeteor[i].active) {
-                // Movement
-                bigMeteor[i].position.x += bigMeteor[i].speed.x;
-                bigMeteor[i].position.y += bigMeteor[i].speed.y;
-
-                // Collision logic: meteor vs wall
-                if (bigMeteor[i].position.x > screenWidth + bigMeteor[i].radius) bigMeteor[i].position.x = -(bigMeteor[i].radius);
-                else if (bigMeteor[i].position.x < 0 - bigMeteor[i].radius) bigMeteor[i].position.x = screenWidth + bigMeteor[i].radius;
-                if (bigMeteor[i].position.y > screenHeight + bigMeteor[i].radius) bigMeteor[i].position.y = -(bigMeteor[i].radius);
-                else if (bigMeteor[i].position.y < 0 - bigMeteor[i].radius) bigMeteor[i].position.y = screenHeight + bigMeteor[i].radius;
+            // Shoot life timer
+            for (int i = 0; i < player->playerMaxShoots; i++) {
+                shoots[i]->LifeTimer();
             }
-        }
 
-        // Meteors logic: medium meteors
-        for (int i = 0; i < maxMediumMeteors; i++) {
-            if (mediumMeteor[i].active) {
-                // Movement
-                mediumMeteor[i].position.x += mediumMeteor[i].speed.x * 3;
-                mediumMeteor[i].position.y += mediumMeteor[i].speed.y * 3;
-
-                // Collision logic: meteor vs wall
-                if (mediumMeteor[i].position.x > screenWidth + mediumMeteor[i].radius) mediumMeteor[i].position.x = -(mediumMeteor[i].radius);
-                else if (mediumMeteor[i].position.x < 0 - mediumMeteor[i].radius) mediumMeteor[i].position.x = screenWidth + mediumMeteor[i].radius;
-                if (mediumMeteor[i].position.y > screenHeight + mediumMeteor[i].radius) mediumMeteor[i].position.y = -(mediumMeteor[i].radius);
-                else if (mediumMeteor[i].position.y < 0 - mediumMeteor[i].radius) mediumMeteor[i].position.y = screenHeight + mediumMeteor[i].radius;
+            // Shot logic
+            for (int i = 0; i < player->playerMaxShoots; i++) {
+                shoots[i]->Shot();
             }
-        }
 
-        // Meteors logic: small meteors
-        for (int i = 0; i < maxSmallMeteors; i++) {
-            if (smallMeteor[i].active) {
-                // Movement
-                smallMeteor[i].position.x += smallMeteor[i].speed.x * 5;
-                smallMeteor[i].position.y += smallMeteor[i].speed.y * 5;
 
-                // Collision logic: meteor vs wall
-                if (smallMeteor[i].position.x > screenWidth + smallMeteor[i].radius) smallMeteor[i].position.x = -(smallMeteor[i].radius);
-                else if (smallMeteor[i].position.x < 0 - smallMeteor[i].radius) smallMeteor[i].position.x = screenWidth + smallMeteor[i].radius;
-                if (smallMeteor[i].position.y > screenHeight + smallMeteor[i].radius) smallMeteor[i].position.y = -(smallMeteor[i].radius);
-                else if (smallMeteor[i].position.y < 0 - smallMeteor[i].radius) smallMeteor[i].position.y = screenHeight + smallMeteor[i].radius;
+
+            // Collision logic: player vs meteors
+
+            for (int a = 0; a < maxBigMeteors; a++) {
+                if (CheckCollisionCircles({ player->GetPosition().x, player->GetPosition().y }, player->GetRadius(), bigMeteor[a].position, bigMeteor[a].radius) && bigMeteor[a].active) gameOver = true;
             }
-        }
 
-        // Collision logic: player-shoots vs meteors
-        for (int i = 0; i < player->playerMaxShoots; i++) {
-            if ((shoots[i]->GetActive())) {
-                for (int a = 0; a < maxBigMeteors; a++) {
-                    if (bigMeteor[a].active && CheckCollisionCircles(shoots[i]->GetPosition(), shoots[i]->GetRadius(), bigMeteor[a].position, bigMeteor[a].radius)) {
-                        shoots[i]->SetActive(false);
-                        shoots[i]->SetLifeSpawn(0);
-                        bigMeteor[a].active = false;
-                        destroyedMeteorsCount++;
+            for (int a = 0; a < maxMediumMeteors; a++) {
+                if (CheckCollisionCircles({ player->GetPosition().x,  player->GetPosition().y }, player->GetRadius(), mediumMeteor[a].position, mediumMeteor[a].radius) && mediumMeteor[a].active) gameOver = true;
+            }
+            for (int a = 0; a < maxSmallMeteors; a++) {
+                if (CheckCollisionCircles({ player->GetPosition().x,  player->GetPosition().y }, player->GetRadius(), smallMeteor[a].position, smallMeteor[a].radius) && smallMeteor[a].active) gameOver = true;
+            }
 
-                        for (int j = 0; j < 2; j++) {
-                            if (midMeteorsCount % 2 == 0) {
-                                mediumMeteor[midMeteorsCount].position = { bigMeteor[a].position.x, bigMeteor[a].position.y };
-                                mediumMeteor[midMeteorsCount].speed = { (float)cos(shoots[i]->GetRotation() * DEG2RAD) * meteorSpeed * -1 * GetFrameTime(), (float)sin(shoots[i]->GetRotation() * DEG2RAD) * meteorSpeed * -1 * GetFrameTime() };
+            // Meteors logic: big meteors
+            for (int i = 0; i < maxBigMeteors; i++) {
+                if (bigMeteor[i].active) {
+                    // Movement
+                    bigMeteor[i].position.x += bigMeteor[i].speed.x;
+                    bigMeteor[i].position.y += bigMeteor[i].speed.y;
+
+                    // Collision logic: meteor vs wall
+                    if (bigMeteor[i].position.x > screenWidth + bigMeteor[i].radius) bigMeteor[i].position.x = -(bigMeteor[i].radius);
+                    else if (bigMeteor[i].position.x < 0 - bigMeteor[i].radius) bigMeteor[i].position.x = screenWidth + bigMeteor[i].radius;
+                    if (bigMeteor[i].position.y > screenHeight + bigMeteor[i].radius) bigMeteor[i].position.y = -(bigMeteor[i].radius);
+                    else if (bigMeteor[i].position.y < 0 - bigMeteor[i].radius) bigMeteor[i].position.y = screenHeight + bigMeteor[i].radius;
+                }
+            }
+
+            // Meteors logic: medium meteors
+            for (int i = 0; i < maxMediumMeteors; i++) {
+                if (mediumMeteor[i].active) {
+                    // Movement
+                    mediumMeteor[i].position.x += mediumMeteor[i].speed.x * 3;
+                    mediumMeteor[i].position.y += mediumMeteor[i].speed.y * 3;
+
+                    // Collision logic: meteor vs wall
+                    if (mediumMeteor[i].position.x > screenWidth + mediumMeteor[i].radius) mediumMeteor[i].position.x = -(mediumMeteor[i].radius);
+                    else if (mediumMeteor[i].position.x < 0 - mediumMeteor[i].radius) mediumMeteor[i].position.x = screenWidth + mediumMeteor[i].radius;
+                    if (mediumMeteor[i].position.y > screenHeight + mediumMeteor[i].radius) mediumMeteor[i].position.y = -(mediumMeteor[i].radius);
+                    else if (mediumMeteor[i].position.y < 0 - mediumMeteor[i].radius) mediumMeteor[i].position.y = screenHeight + mediumMeteor[i].radius;
+                }
+            }
+
+            // Meteors logic: small meteors
+            for (int i = 0; i < maxSmallMeteors; i++) {
+                if (smallMeteor[i].active) {
+                    // Movement
+                    smallMeteor[i].position.x += smallMeteor[i].speed.x * 5;
+                    smallMeteor[i].position.y += smallMeteor[i].speed.y * 5;
+
+                    // Collision logic: meteor vs wall
+                    if (smallMeteor[i].position.x > screenWidth + smallMeteor[i].radius) smallMeteor[i].position.x = -(smallMeteor[i].radius);
+                    else if (smallMeteor[i].position.x < 0 - smallMeteor[i].radius) smallMeteor[i].position.x = screenWidth + smallMeteor[i].radius;
+                    if (smallMeteor[i].position.y > screenHeight + smallMeteor[i].radius) smallMeteor[i].position.y = -(smallMeteor[i].radius);
+                    else if (smallMeteor[i].position.y < 0 - smallMeteor[i].radius) smallMeteor[i].position.y = screenHeight + smallMeteor[i].radius;
+                }
+            }
+
+            // Collision logic: player-shoots vs meteors
+            for (int i = 0; i < player->playerMaxShoots; i++) {
+                if ((shoots[i]->GetActive())) {
+                    for (int a = 0; a < maxBigMeteors; a++) {
+                        if (bigMeteor[a].active && CheckCollisionCircles(shoots[i]->GetPosition(), shoots[i]->GetRadius(), bigMeteor[a].position, bigMeteor[a].radius)) {
+                            shoots[i]->SetActive(false);
+                            shoots[i]->SetLifeSpawn(0);
+                            bigMeteor[a].active = false;
+                            destroyedMeteorsCount++;
+
+                            for (int j = 0; j < 2; j++) {
+                                if (midMeteorsCount % 2 == 0) {
+                                    mediumMeteor[midMeteorsCount].position = { bigMeteor[a].position.x, bigMeteor[a].position.y };
+                                    mediumMeteor[midMeteorsCount].speed = { (float)cos(shoots[i]->GetRotation() * DEG2RAD) * meteorSpeed * -1 * GetFrameTime(), (float)sin(shoots[i]->GetRotation() * DEG2RAD) * meteorSpeed * -1 * GetFrameTime() };
+                                }
+                                else {
+                                    mediumMeteor[midMeteorsCount].position = { bigMeteor[a].position.x, bigMeteor[a].position.y };
+                                    mediumMeteor[midMeteorsCount].speed = { (float)cos(shoots[i]->GetRotation() * DEG2RAD) * meteorSpeed * GetFrameTime(), (float)sin(shoots[i]->GetRotation() * DEG2RAD) * meteorSpeed * GetFrameTime() };
+                                }
+
+                                mediumMeteor[midMeteorsCount].active = true;
+                                midMeteorsCount++;
                             }
-                            else {
-                                mediumMeteor[midMeteorsCount].position = { bigMeteor[a].position.x, bigMeteor[a].position.y };
-                                mediumMeteor[midMeteorsCount].speed = { (float)cos(shoots[i]->GetRotation() * DEG2RAD) * meteorSpeed * GetFrameTime(), (float)sin(shoots[i]->GetRotation() * DEG2RAD) * meteorSpeed * GetFrameTime() };
-                            }
-
-                            mediumMeteor[midMeteorsCount].active = true;
-                            midMeteorsCount++;
+                            //bigMeteor[a].position =  {-100, -100};
+                            bigMeteor[a].color = RED;
+                            a = maxBigMeteors;
                         }
-                        //bigMeteor[a].position =  {-100, -100};
-                        bigMeteor[a].color = RED;
-                        a = maxBigMeteors;
                     }
-                }
 
-                for (int b = 0; b < maxMediumMeteors; b++) {
-                    if (mediumMeteor[b].active && CheckCollisionCircles(shoots[i]->GetPosition(), shoots[i]->GetRadius(), mediumMeteor[b].position, mediumMeteor[b].radius)) {
-                        shoots[i]->SetActive(false);
-                        shoots[i]->SetLifeSpawn(0);
-                        mediumMeteor[b].active = false;
-                        destroyedMeteorsCount++;
+                    for (int b = 0; b < maxMediumMeteors; b++) {
+                        if (mediumMeteor[b].active && CheckCollisionCircles(shoots[i]->GetPosition(), shoots[i]->GetRadius(), mediumMeteor[b].position, mediumMeteor[b].radius)) {
+                            shoots[i]->SetActive(false);
+                            shoots[i]->SetLifeSpawn(0);
+                            mediumMeteor[b].active = false;
+                            destroyedMeteorsCount++;
 
-                        for (int j = 0; j < 2; j++) {
-                            if (smallMeteorsCount % 2 == 0) {
-                                smallMeteor[smallMeteorsCount].position = { mediumMeteor[b].position.x, mediumMeteor[b].position.y };
-                                smallMeteor[smallMeteorsCount].speed = { (float)cos(shoots[i]->GetRotation() * DEG2RAD) * meteorSpeed * -1 * GetFrameTime(), (float)sin(shoots[i]->GetRotation() * DEG2RAD) * meteorSpeed * -1 * GetFrameTime() };
+                            for (int j = 0; j < 2; j++) {
+                                if (smallMeteorsCount % 2 == 0) {
+                                    smallMeteor[smallMeteorsCount].position = { mediumMeteor[b].position.x, mediumMeteor[b].position.y };
+                                    smallMeteor[smallMeteorsCount].speed = { (float)cos(shoots[i]->GetRotation() * DEG2RAD) * meteorSpeed * -1 * GetFrameTime(), (float)sin(shoots[i]->GetRotation() * DEG2RAD) * meteorSpeed * -1 * GetFrameTime() };
+                                }
+                                else {
+                                    smallMeteor[smallMeteorsCount].position = { mediumMeteor[b].position.x, mediumMeteor[b].position.y };
+                                    smallMeteor[smallMeteorsCount].speed = { (float)cos(shoots[i]->GetRotation() * DEG2RAD) * meteorSpeed * GetFrameTime(), (float)sin(shoots[i]->GetRotation() * DEG2RAD) * meteorSpeed * GetFrameTime() };
+                                }
+
+                                smallMeteor[smallMeteorsCount].active = true;
+                                smallMeteorsCount++;
                             }
-                            else {
-                                smallMeteor[smallMeteorsCount].position = { mediumMeteor[b].position.x, mediumMeteor[b].position.y };
-                                smallMeteor[smallMeteorsCount].speed = { (float)cos(shoots[i]->GetRotation() * DEG2RAD) * meteorSpeed * GetFrameTime(), (float)sin(shoots[i]->GetRotation() * DEG2RAD) * meteorSpeed * GetFrameTime() };
-                            }
-
-                            smallMeteor[smallMeteorsCount].active = true;
-                            smallMeteorsCount++;
+                            mediumMeteor[b].color = GREEN;
+                            b = maxMediumMeteors;
                         }
-                        mediumMeteor[b].color = GREEN;
-                        b = maxMediumMeteors;
                     }
-                }
 
-                for (int c = 0; c < maxSmallMeteors; c++) {
-                    if (smallMeteor[c].active && CheckCollisionCircles(shoots[i]->GetPosition(), shoots[i]->GetRadius(), smallMeteor[c].position, smallMeteor[c].radius)) {
-                        shoots[i]->SetActive(false);
-                        shoots[i]->SetLifeSpawn(0);
-                        smallMeteor[c].active = false;
-                        destroyedMeteorsCount++;
-                        smallMeteor[c].color = YELLOW;
-                        c = maxSmallMeteors;
+                    for (int c = 0; c < maxSmallMeteors; c++) {
+                        if (smallMeteor[c].active && CheckCollisionCircles(shoots[i]->GetPosition(), shoots[i]->GetRadius(), smallMeteor[c].position, smallMeteor[c].radius)) {
+                            shoots[i]->SetActive(false);
+                            shoots[i]->SetLifeSpawn(0);
+                            smallMeteor[c].active = false;
+                            destroyedMeteorsCount++;
+                            smallMeteor[c].color = YELLOW;
+                            c = maxSmallMeteors;
+                        }
                     }
                 }
             }
         }
     }
-    if (destroyedMeteorsCount == maxBigMeteors + maxMediumMeteors + maxSmallMeteors){
-        victory = true;
-    }
-    else {
-        if (IsKeyPressed(KEY_ENTER)) {
-            InitGame();
-            gameOver = false;
+        if (destroyedMeteorsCount == maxBigMeteors + maxMediumMeteors + maxSmallMeteors) {
+            victory = true;
         }
-    }
+        else {
+            if (IsKeyPressed(KEY_ENTER)) {
+                InitGame();
+                gameOver = false;
+            }
+        }
+    
 }
 
 void Game::DrawGame() {
@@ -377,7 +389,9 @@ void Game::DrawGame() {
             if (shoots[i]->GetActive()) DrawCircleV(shoots[i]->GetPosition(), shoots[i]->GetRadius(), SKYBLUE);
         }
 
-        if (victory) { DrawText("VICTORY", screenWidth / 2 - MeasureText("VICTORY", 80) / 2, screenHeight / 2-40, 80, LIGHTGRAY); }
+        if (victory) {
+            { DrawText("VICTORY", screenWidth / 2 - MeasureText("VICTORY", 80) / 2, screenHeight / 2 - 40, 80, LIGHTGRAY); }
+        }
 
         if (pause) { DrawText("GAME PAUSED", screenWidth / 2 - MeasureText("GAME PAUSED", 40) / 2, screenHeight / 2 - 40, 40, GRAY); }
     }
@@ -386,10 +400,16 @@ void Game::DrawGame() {
     EndDrawing();
 }
 
-void Game::UnloadGame() {
+void Game::DeInitGame() {
 }
 
+
 void Game::UpdateDrawFrame() {
+    Game::InputGame();
     Game::UpdateGame();
     Game::DrawGame();
+}
+
+bool Game::GoToMenu() {
+    return goToMenu;
 }

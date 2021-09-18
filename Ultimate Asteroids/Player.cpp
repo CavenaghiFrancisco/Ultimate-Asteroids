@@ -46,10 +46,10 @@ float Player::GetAcceleration() {
 }
 
 void Player::UpdateAcceleration() {
+    if (Vector2Length(Vector2Subtract(GetMousePosition(), position)) > 60.0f) {
+        rotation = Vector2Angle(position, GetMousePosition()) + 90;
+    }
     if (IsMouseButtonDown(MOUSE_RIGHT_BUTTON)) {
-        if (Vector2Length(Vector2Subtract(GetMousePosition(),position)) > 60.0f) {
-            rotation = Vector2Angle(position, GetMousePosition()) + 90;
-        }
         if (acceleration < 3) acceleration += 0.3f * GetFrameTime();
     }
     else {

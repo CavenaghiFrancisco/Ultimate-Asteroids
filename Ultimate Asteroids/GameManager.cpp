@@ -57,6 +57,12 @@ void GameManager::UpdateState(STATES states) {
 			delete menu;
 			isThisStateStarting = true;
 		}
+		else if (menu->ExitGame()) {
+			currentState = STATES::EXIT;
+			menu->DeInit();
+			delete menu;
+			isThisStateStarting = true;
+		}
 		break;
 	case STATES::GAME:
 		if (isThisStateStarting) {
@@ -67,6 +73,12 @@ void GameManager::UpdateState(STATES states) {
 			game->InitGame();
 		}
 		game->UpdateDrawFrame();
+		if (game->GoToMenu()) {
+			currentState = STATES::MENU;
+			game->DeInitGame();
+			delete game;
+			isThisStateStarting = true;
+		}
 		break;
 	/*case STATES::SHOP:
 		break;*/

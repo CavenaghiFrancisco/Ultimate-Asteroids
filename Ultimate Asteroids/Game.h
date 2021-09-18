@@ -38,11 +38,12 @@ public:
 	~Game();
 	bool GetInited();
 	void InitGame();         // Initialize game
+	void InputGame();
 	void UpdateGame();       // Update game (one frame)
 	void DrawGame();         // Draw game (one frame)
-	void UnloadGame();       // Unload game
+	void DeInitGame();       // Unload game
 	void UpdateDrawFrame();  // Update and Draw (one frame)
-	
+	bool GoToMenu();
 };
 
 

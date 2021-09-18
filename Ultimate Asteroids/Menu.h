@@ -31,7 +31,11 @@ private:
 	Textures* button2Pushed;
 	Textures* button3;
 	Textures* button3Pushed;
-	Font font;
+	Texture2D creditsTexture;
+	Textures* credits;
+	Rectangle returnButtonArea;
+	Texture2D returnButtonTexture;
+	Textures* returnButton;
 public:
 	const float screenWidth = 1366;
 	const float screenHeight = 768;
