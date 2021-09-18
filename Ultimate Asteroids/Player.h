@@ -21,6 +21,7 @@ public:
     const int screenHeight = 768;
     Player();
     ~Player();
+    Vector2 accel;
     Vector2 GetSpeed();
     void UpdateSpeed();
     float GetAcceleration();
@@ -36,7 +37,6 @@ public:
     float Vector2Length(Vector2 v);
     Vector2 Vector2Subtract(Vector2 v1, Vector2 v2);
     float Vector2Angle(Vector2 v1, Vector2 v2);
-
 };
 
 

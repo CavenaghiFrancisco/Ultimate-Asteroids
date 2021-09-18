@@ -11,7 +11,12 @@ private:
 	bool exitGame;
 	int option;
 	float scrolling;
+	Color backgroundColor;
+	Rectangle backgroundColorTexture;
 	Rectangle button0Area;
+	Rectangle button1Area;
+	Rectangle button2Area;
+	Rectangle button3Area;
 	Texture2D backgroundTexture;
 	Textures* background;
 	Texture2D buttonTexture;
@@ -20,6 +25,12 @@ private:
 	Textures* button0Pushed;
 	Texture2D titleTexture;
 	Textures* title;
+	Textures* button1;
+	Textures* button1Pushed;
+	Textures* button2;
+	Textures* button2Pushed;
+	Textures* button3;
+	Textures* button3Pushed;
 	Font font;
 public:
 	const float screenWidth = 1366;

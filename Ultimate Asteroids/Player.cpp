@@ -53,7 +53,7 @@ void Player::UpdateAcceleration() {
         if (acceleration < 3) acceleration += 0.3f * GetFrameTime();
     }
     else {
-        if (acceleration > 0) acceleration -= 0.6f * GetFrameTime();
+        if (acceleration > 0) acceleration -= 2.0f * GetFrameTime();
         if (acceleration < 0.1) acceleration = 0.1;
     }
 }
