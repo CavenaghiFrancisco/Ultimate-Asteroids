@@ -20,10 +20,16 @@ private:
 	Rectangle backgroundColorTexture;
 	Texture2D shipTexture;
 	Textures* ship;
+	Texture2D bigMeteorsTexture;
+	Textures* bigMeteors;
+	Texture2D mediumMeteorsTexture;
+	Textures* mediumMeteors;
+	Texture2D smallMeteorsTexture;
+	Textures* smallMeteors;
+
 public:
 	const int screenWidth = 1366;
 	const int screenHeight = 768;
-	const int meteorsSpeed = 30;
 	float currentScreenWidth = GetScreenWidth();
 	float currentScreenHeight = GetScreenHeight();
 	float windowReSizeWidth = currentScreenWidth / screenWidth;

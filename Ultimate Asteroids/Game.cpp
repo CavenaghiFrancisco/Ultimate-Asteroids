@@ -3,32 +3,31 @@
 
 
 
-const int maxBigMeteors = 2;
+const int maxBigMeteors = 1;
 const int maxMediumMeteors = maxBigMeteors * 2;
 const int maxSmallMeteors = maxMediumMeteors * 2;
 const int meteorSpeed = 20;
-
 struct Meteor {
     Vector2 position;
     Vector2 speed;
+    float rotation;
     float radius;
     bool active;
     Color color;
 };
 
-
-  bool gameOver = false;
-  bool pause = false;
-  bool victory = false;
+bool gameOver = false;
+bool pause = false;
+bool victory = false;
 
   
-  Meteor bigMeteor[maxBigMeteors] = { 0 };
-  Meteor mediumMeteor[maxMediumMeteors] = { 0 };
-  Meteor smallMeteor[maxSmallMeteors] = { 0 };
+Meteor bigMeteor[maxBigMeteors] = { 0 };
+Meteor mediumMeteor[maxMediumMeteors] = { 0 };
+Meteor smallMeteor[maxSmallMeteors] = { 0 };
 
-  int midMeteorsCount = 0;
-  int smallMeteorsCount = 0;
-  int destroyedMeteorsCount = 0;
+int midMeteorsCount = 0;
+int smallMeteorsCount = 0;
+int destroyedMeteorsCount = 0;
 
 
 
@@ -55,6 +54,9 @@ void Game::InitGame() {
     player = new Player();
     backgroundGame = new Textures();
     ship = new Textures();
+    bigMeteors = new Textures();
+    mediumMeteors = new Textures();
+    smallMeteors = new Textures();
     // Initialization player
 
     destroyedMeteorsCount = 0;
@@ -96,7 +98,7 @@ void Game::InitGame() {
         }
 
         bigMeteor[i].speed = { (float)velx * GetFrameTime(), (float)vely * GetFrameTime() };
-        bigMeteor[i].radius = 40;
+        bigMeteor[i].radius = 60;
         bigMeteor[i].active = true;
         bigMeteor[i].color = BLUE;
     }
@@ -104,7 +106,7 @@ void Game::InitGame() {
     for (int i = 0; i < maxMediumMeteors; i++) {
         mediumMeteor[i].position = { -100, -100 };
         mediumMeteor[i].speed = { 0,0 };
-        mediumMeteor[i].radius = 20;
+        mediumMeteor[i].radius = 40;
         mediumMeteor[i].active = false;
         mediumMeteor[i].color = BLUE;
     }
@@ -112,7 +114,7 @@ void Game::InitGame() {
     for (int i = 0; i < maxSmallMeteors; i++) {
         smallMeteor[i].position = { -100, -100 };
         smallMeteor[i].speed = { 0,0 };
-        smallMeteor[i].radius = 10;
+        smallMeteor[i].radius = 20;
         smallMeteor[i].active = false;
         smallMeteor[i].color = BLUE;
     }
@@ -128,8 +130,15 @@ void Game::InitGame() {
     shipTexture = LoadTexture("Lv3.png");
     shipTexture.width = player->GetRadius();
     shipTexture.height = player->GetRadius();
-    
-
+    bigMeteorsTexture = LoadTexture("meteors0.png");
+    bigMeteorsTexture.width = bigMeteor->radius;
+    bigMeteorsTexture.height = bigMeteor->radius;
+    mediumMeteorsTexture = LoadTexture("meteors1.png");
+    mediumMeteorsTexture.width = mediumMeteor->radius;
+    mediumMeteorsTexture.height =mediumMeteor->radius;
+    smallMeteorsTexture = LoadTexture("meteors2.png");
+    smallMeteorsTexture.width = smallMeteor->radius;
+    smallMeteorsTexture.height = smallMeteor->radius;
 }
 
 
@@ -297,7 +306,6 @@ void Game::UpdateGame() {
                             smallMeteor[smallMeteorsCount].active = true;
                             smallMeteorsCount++;
                         }
-                        //mediumMeteor[b].position =  {-100, -100};
                         mediumMeteor[b].color = GREEN;
                         b = maxMediumMeteors;
                     }
@@ -310,7 +318,6 @@ void Game::UpdateGame() {
                         smallMeteor[c].active = false;
                         destroyedMeteorsCount++;
                         smallMeteor[c].color = YELLOW;
-                        // smallMeteor[c].position =  {-100, -100};
                         c = maxSmallMeteors;
                     }
                 }
@@ -342,15 +349,27 @@ void Game::DrawGame() {
         DrawTexturePro(shipTexture, ship->GetFrameRec(), { player->GetPosition().x,  player->GetPosition().y, (float)shipTexture.width *2.0f , (float)shipTexture.height * 2.0f }, { (float)shipTexture.width,(float)shipTexture.height }, player->GetRotation(), WHITE);
         // Draw meteors
         for (int i = 0; i < maxBigMeteors; i++) {
-            if (bigMeteor[i].active) DrawCircleV(bigMeteor[i].position, bigMeteor[i].radius, DARKGRAY);
+            bigMeteors->SetTextureData(bigMeteorsTexture, bigMeteor[i].position.x, bigMeteor[i].position.y , bigMeteor->radius, bigMeteor->radius);
+            if (bigMeteor[i].active) {
+                //DrawCircleV(bigMeteor[i].position, bigMeteor[i].radius, DARKGRAY);
+                DrawTexturePro(bigMeteorsTexture, bigMeteors->GetFrameRec(), { bigMeteors->GetPosition().x,  bigMeteors->GetPosition().y, (float)bigMeteorsTexture.width * 2.0f , (float)bigMeteorsTexture.height * 2.0f }, { (float)bigMeteorsTexture.width,(float)bigMeteorsTexture.height }, bigMeteor[i].rotation >= 360 ? bigMeteor[i].rotation = 0 : bigMeteor[i].rotation += 1, WHITE);
+            }
         }
 
         for (int i = 0; i < maxMediumMeteors; i++) {
-            if (mediumMeteor[i].active) DrawCircleV(mediumMeteor[i].position, mediumMeteor[i].radius, GRAY);
+            mediumMeteors->SetTextureData(mediumMeteorsTexture, mediumMeteor[i].position.x, mediumMeteor[i].position.y, mediumMeteor->radius, mediumMeteor->radius);
+            if (mediumMeteor[i].active) {
+                //DrawCircleV(mediumMeteor[i].position, mediumMeteor[i].radius, DARKGRAY);
+                DrawTexturePro(mediumMeteorsTexture, mediumMeteors->GetFrameRec(), { mediumMeteors->GetPosition().x,  mediumMeteors->GetPosition().y, (float)mediumMeteorsTexture.width * 2.0f , (float)mediumMeteorsTexture.height * 2.0f }, { (float)mediumMeteorsTexture.width,(float)mediumMeteorsTexture.height }, mediumMeteor[i].rotation >= 360 ? mediumMeteor[i].rotation = 0 : mediumMeteor[i].rotation += 1, WHITE);
+            }
         }
 
         for (int i = 0; i < maxSmallMeteors; i++) {
-            if (smallMeteor[i].active) DrawCircleV(smallMeteor[i].position, smallMeteor[i].radius, GRAY);
+            smallMeteors->SetTextureData(smallMeteorsTexture, smallMeteor[i].position.x, smallMeteor[i].position.y, smallMeteor->radius, smallMeteor->radius);
+            if (smallMeteor[i].active) {
+                //DrawCircleV(smallMeteor[i].position, smallMeteor[i].radius, DARKGRAY);
+                DrawTexturePro(smallMeteorsTexture, smallMeteors->GetFrameRec(), { smallMeteors->GetPosition().x,  smallMeteors->GetPosition().y, (float)smallMeteorsTexture.width * 2.0f , (float)smallMeteorsTexture.height * 2.0f }, { (float)smallMeteorsTexture.width,(float)smallMeteorsTexture.height }, smallMeteor[i].rotation >= 360 ? smallMeteor[i].rotation = 0 : smallMeteor[i].rotation += 1, WHITE);
+            }
         }
 
         // Draw shoot
