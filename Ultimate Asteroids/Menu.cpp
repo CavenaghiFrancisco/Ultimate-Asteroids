@@ -3,11 +3,37 @@
 Menu::Menu() {
 	menuInited = false;
 	goToGame = false;
-	
 	backgroundColor ={ (unsigned char)(GetRandomValue(0, 255)),(unsigned char)GetRandomValue(0, 255) , (unsigned char)GetRandomValue(0, 255) , 40 };
+	title = new Textures();
+	button0Pushed = new Textures();
+	button1Pushed = new Textures();
+	button2Pushed = new Textures();
+	button3Pushed = new Textures();
+	background = new Textures();
+	button0 = new Textures;
+	button1 = new Textures;
+	button2 = new Textures;
+	button3 = new Textures;
 }
 
 Menu::~Menu() {
+	UnloadTexture(backgroundTexture);
+	UnloadTexture(buttonPushedTexture);
+	UnloadTexture(buttonTexture);
+	UnloadTexture(titleTexture);
+	UnloadTexture(buttonTexture);
+	UnloadTexture(buttonTexture);
+	UnloadTexture(buttonTexture);
+	delete title;
+	delete button0Pushed;
+	delete button1Pushed;
+	delete button2Pushed;
+	delete button3Pushed;
+	delete background;
+	delete button0;
+	delete button1;
+	delete button2;
+	delete button3;
 }
 
 void Menu::Init() {
@@ -25,16 +51,6 @@ void Menu::Init() {
 	buttonPushedTexture.width = 410;
 	buttonPushedTexture.height = 200;
 	titleTexture = LoadTexture("title.png");
-	title = new Textures();
-	button0Pushed = new Textures();
-	button1Pushed = new Textures();
-	button2Pushed = new Textures();
-	button3Pushed = new Textures();
-	background = new Textures();
-	button0 = new Textures;
-	button1 = new Textures;
-	button2 = new Textures;
-	button3 = new Textures;
 	backgroundColorTexture = { 0,0,(float)GetScreenWidth(),(float)GetScreenHeight() };
 	button1Area = { 545,485,260,60 };
 	button2Area = { 545,585,260,60 };

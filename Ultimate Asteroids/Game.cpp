@@ -3,10 +3,6 @@
 
 
 
-//----------------------------------------------------------------------------------
-// Types and Structures Definition
-//----------------------------------------------------------------------------------
-
 const int maxBigMeteors = 2;
 const int maxMediumMeteors = maxBigMeteors * 2;
 const int maxSmallMeteors = maxMediumMeteors * 2;
@@ -20,14 +16,10 @@ struct Meteor {
     Color color;
 };
 
-//------------------------------------------------------------------------------------
-// Global Variables Declaration
-//------------------------------------------------------------------------------------
+
   bool gameOver = false;
   bool pause = false;
   bool victory = false;
-
-// NOTE: Defined triangle is isosceles with common angles of 70 degrees.
 
   
   Meteor bigMeteor[maxBigMeteors] = { 0 };
@@ -54,13 +46,15 @@ bool Game::GetInited() {
 }
 
 void Game::InitGame() {
+    backgroundColorTexture = { 0,0,(float)GetScreenWidth(),(float)GetScreenHeight() };
     int posx, posy;
     int velx, vely;
     bool correctRange = false;
     victory = false;
     pause = false;
     player = new Player();
-
+    backgroundGame = new Textures();
+    ship = new Textures();
     // Initialization player
 
     destroyedMeteorsCount = 0;
@@ -126,6 +120,16 @@ void Game::InitGame() {
     midMeteorsCount = 0;
     smallMeteorsCount = 0;
     gameInited = true;
+    scrolling = 0;
+    backgroundGameTexture = LoadTexture("background1.png");
+    backgroundGameTexture.width = GetScreenWidth();
+    backgroundGameTexture.height = GetScreenHeight();
+    backgroundGame->SetTextureData(backgroundGameTexture, 0, 0, backgroundGame->GetWidth(), backgroundGame->GetHeight());
+    shipTexture = LoadTexture("Lv3.png");
+    shipTexture.width = player->GetRadius();
+    shipTexture.height = player->GetRadius();
+    
+
 }
 
 
@@ -136,7 +140,9 @@ void Game::UpdateGame() {
 
         if (!pause) {
 
-
+            scrolling -= 0.5f;
+            if (scrolling <= -backgroundGameTexture.width * 2) scrolling = 0;
+            ship->SetTextureData(shipTexture, player->GetPosition().x - player->GetRadius() / 2, player->GetPosition().y - player->GetRadius() / 2, player->GetRadius(), player->GetRadius());
             // Player logic: speed
             player->UpdateSpeed();
 
@@ -326,11 +332,14 @@ void Game::DrawGame() {
     BeginDrawing();
 
     ClearBackground(RAYWHITE);
+    DrawTextureEx(backgroundGameTexture, { scrolling, 0 }, 0.0f, 2.0f, WHITE);
+    DrawTextureEx(backgroundGameTexture, { backgroundGameTexture.width * 2 + scrolling, 0 }, 0.0f, 2.0f, WHITE);
+    DrawRectangle(backgroundColorTexture.x, backgroundColorTexture.y, backgroundColorTexture.width, backgroundColorTexture.height, backgroundGameColor);
 
     if (!gameOver) {
         // Draw spaceship
-        player->DrawPlayer();
-
+        /*player->DrawPlayer();*/
+        DrawTexturePro(shipTexture, ship->GetFrameRec(), { player->GetPosition().x,  player->GetPosition().y, (float)shipTexture.width *2.0f , (float)shipTexture.height * 2.0f }, { (float)shipTexture.width,(float)shipTexture.height }, player->GetRotation(), WHITE);
         // Draw meteors
         for (int i = 0; i < maxBigMeteors; i++) {
             if (bigMeteor[i].active) DrawCircleV(bigMeteor[i].position, bigMeteor[i].radius, DARKGRAY);
@@ -349,7 +358,7 @@ void Game::DrawGame() {
             if (shoots[i]->GetActive()) DrawCircleV(shoots[i]->GetPosition(), shoots[i]->GetRadius(), SKYBLUE);
         }
 
-        if (victory) { DrawText("VICTORY", screenWidth / 2 - MeasureText("VICTORY", 20) / 2, screenHeight / 2, 20, LIGHTGRAY); }
+        if (victory) { DrawText("VICTORY", screenWidth / 2 - MeasureText("VICTORY", 80) / 2, screenHeight / 2-40, 80, LIGHTGRAY); }
 
         if (pause) { DrawText("GAME PAUSED", screenWidth / 2 - MeasureText("GAME PAUSED", 40) / 2, screenHeight / 2 - 40, 40, GRAY); }
     }

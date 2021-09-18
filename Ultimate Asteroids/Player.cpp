@@ -6,7 +6,7 @@ Player::Player() {
     
     position = { (float)screenWidth / 2, (float)screenHeight / 2};
     collider = { position.x,position.y };
-    radius = 12;
+    radius = 40;
     speed = { 0, 0 };
     acceleration = 0;
     rotation = 0;

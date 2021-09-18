@@ -14,9 +14,9 @@ private:
     float shipHeight;
 public:
     const int playerMaxShoots = 3;
-    const int playerSize = 20;
     const int playerSpeed = 300;
     const int screenWidth = 1366;
+    
     //Otra linea bugeada
     const int screenHeight = 768;
     Player();

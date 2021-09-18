@@ -13,6 +13,13 @@ private:
 	bool isPaused;
 	Player* player;
 	Shoot* shoots[5];
+	float scrolling;
+	Texture2D backgroundGameTexture;
+	Textures* backgroundGame;
+	Color backgroundGameColor = { (unsigned char)(GetRandomValue(0, 255)),(unsigned char)GetRandomValue(0, 255) , (unsigned char)GetRandomValue(0, 255) , 40 };
+	Rectangle backgroundColorTexture;
+	Texture2D shipTexture;
+	Textures* ship;
 public:
 	const int screenWidth = 1366;
 	const int screenHeight = 768;

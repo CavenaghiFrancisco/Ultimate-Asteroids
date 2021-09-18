@@ -68,24 +68,8 @@ void GameManager::UpdateState(STATES states) {
 		}
 		game->UpdateDrawFrame();
 		break;
-	case STATES::SHOP:
-		if (isThisStateStarting) {
-			menu = new Menu();
-			isThisStateStarting = false;
-		}
-		if (!(menu->GetInited())) {
-			menu->Init();
-		}
-		menu->Input();
-		menu->Update();
-		menu->Draw();
-		if (menu->ExitMenuGoToGame()) {
-			currentState = STATES::MENU;
-			menu->DeInit();
-			delete menu;
-			isThisStateStarting = true;
-		}
-		break;
+	/*case STATES::SHOP:
+		break;*/
 	case STATES::EXIT:
 		isPlaying = false;
 		break;
