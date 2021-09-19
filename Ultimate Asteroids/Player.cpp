@@ -10,7 +10,8 @@ Player::Player() {
     speed = { 0, 0 };
     acceleration = 0;
     rotation = 0;
-    color = RED;
+    color = { (unsigned char)113,(unsigned char)216 , (unsigned char)228 , 150 };
+    shield = false;
 }
 
 Player::~Player() {
@@ -85,6 +86,21 @@ void Player::SetPositionY(float positiony) {
 
 void Player::SetPositionX(float positionx) {
     position.x = positionx;
+}
+
+void Player::SetShield(bool shield) {
+    this->shield = shield;
+}
+
+void Player::SetBullets(bool b) {
+    bullet = b;
+}
+bool Player::GetBullets() {
+    return bullet;
+}
+
+bool Player::GetShield() {
+    return shield;
 }
 
 void Player::DrawPlayer() {

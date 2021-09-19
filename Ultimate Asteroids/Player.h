@@ -12,6 +12,8 @@ private:
     float radius;
     Color color;
     float shipHeight;
+    bool shield;
+    bool bullet;
 public:
     const int playerMaxShoots = 3;
     const int playerSpeed = 300;
@@ -34,6 +36,10 @@ public:
     float GetRadius();
     void SetPositionX(float positionx);
     void SetPositionY(float positiony);
+    void SetShield(bool shield);
+    bool GetShield();
+    void SetBullets(bool b);
+    bool GetBullets();
     float Vector2Length(Vector2 v);
     Vector2 Vector2Subtract(Vector2 v1, Vector2 v2);
     float Vector2Angle(Vector2 v1, Vector2 v2);

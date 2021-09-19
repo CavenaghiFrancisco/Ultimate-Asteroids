@@ -26,6 +26,13 @@ private:
 	Textures* mediumMeteors;
 	Texture2D smallMeteorsTexture;
 	Textures* smallMeteors;
+	Texture2D sightTexture;
+	Textures* sight;
+	Texture2D moreBulletsTexture;
+	Textures* moreBullets;
+	Texture2D shieldTexture;
+	Textures* shield;
+	float timerPowerUp;
 
 public:
 	const int screenWidth = 1366;
