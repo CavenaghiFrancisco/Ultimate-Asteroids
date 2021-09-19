@@ -3,7 +3,7 @@
 
 
 
-const int maxBigMeteors = 10;
+const int maxBigMeteors = 1;
 const int maxMediumMeteors = maxBigMeteors * 2;
 const int maxSmallMeteors = maxMediumMeteors * 2;
 const int meteorSpeed = 30;
@@ -16,13 +16,10 @@ struct Meteor {
     Color color;
 };
 
-
-
 bool gameOver = false;
 bool pause = false;
 bool victory = false;
-
-  
+ 
 Meteor bigMeteor[maxBigMeteors] = { 0 };
 Meteor mediumMeteor[maxMediumMeteors] = { 0 };
 Meteor smallMeteor[maxSmallMeteors] = { 0 };
@@ -68,6 +65,9 @@ void Game::InitGame() {
     shield = new Textures();
     rightClick = new Textures();
     leftClick = new Textures();
+    buttonPause = new Textures();
+    buttonResumePlayAgain = new Textures();
+    buttonMenuExit = new Textures();
     // Initialization player
 
     destroyedMeteorsCount = 0;
@@ -172,7 +172,19 @@ void Game::InitGame() {
     leftClickTexture.width = 80;
     leftClickTexture.height = 80;
     leftClick->SetTextureData(leftClickTexture, GetScreenWidth() / 2 - leftClickTexture.width -20, GetScreenHeight() - leftClickTexture.height - 20, leftClickTexture.width, leftClickTexture.height);
-
+    buttonPauseTexture = LoadTexture("pause.png");
+    buttonPauseTexture.width = 100;
+    buttonPauseTexture.height = 100;
+    buttonTexture = LoadTexture("button.png");
+    buttonTexture.width = 310;
+    buttonTexture.height = 100;
+    buttonPushedTexture = LoadTexture("button_pushed.png");
+    buttonPushedTexture.width = 310;
+    buttonPushedTexture.height = 100;
+    buttonPause->SetTextureData(buttonPauseTexture, GetScreenWidth() - buttonPauseTexture.width, 0, buttonPauseTexture.width, buttonPauseTexture.height);
+    buttonP = { buttonPause->GetPosition().x,buttonPause->GetPosition().y ,(float)buttonPause->GetWidth() ,(float)buttonPause->GetHeight() };
+    buttonResumePlayAgain->SetTextureData(buttonTexture, GetScreenWidth()/2 - buttonTexture.width - 20, GetScreenHeight()/2 + 50, buttonTexture.width, buttonTexture.height);
+    buttonMenuExit->SetTextureData(buttonTexture, GetScreenWidth() / 2 + 20, GetScreenHeight() / 2 + 50, buttonTexture.width, buttonTexture.height);
 
 
 }
@@ -189,7 +201,9 @@ void Game::InputGame() {
 
 void Game::UpdateGame() {
     if (!gameOver) {
-        if (IsKeyPressed('P')) pause = !pause;
+        if (CheckCollisionPointRec(GetMousePosition(), buttonP) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && !victory) {
+            pause = !pause;
+        }
         if (!pause) {
 
             timerPowerUp += GetFrameTime();
@@ -456,12 +470,16 @@ void Game::DrawGame() {
         }
         DrawTextureRec(rightClickTexture, rightClick->GetFrameRec(), rightClick->GetPosition(), WHITE);
         DrawTextureRec(leftClickTexture, leftClick->GetFrameRec(), leftClick->GetPosition(), WHITE);
-
+        DrawTextureRec(buttonPauseTexture, buttonPause->GetFrameRec(), buttonPause->GetPosition(), WHITE);
         if (victory) {
             { DrawText("VICTORY", screenWidth / 2 - MeasureText("VICTORY", 80) / 2, screenHeight / 2 - 40, 80, LIGHTGRAY); }
         }
 
-        if (pause) { DrawText("GAME PAUSED", screenWidth / 2 - MeasureText("GAME PAUSED", 40) / 2, screenHeight / 2 - 40, 40, GRAY); }
+        if (pause) {
+            DrawText("GAME PAUSED", screenWidth / 2 - MeasureText("GAME PAUSED", 40) / 2, screenHeight / 2 - 40, 40, GRAY); 
+            DrawTextureRec(buttonTexture, buttonResumePlayAgain->GetFrameRec(), buttonResumePlayAgain->GetPosition(), WHITE);
+            DrawTextureRec(buttonTexture, buttonMenuExit->GetFrameRec(), buttonMenuExit->GetPosition(), WHITE);
+        }
     }
     else DrawText("PRESS [ENTER] TO PLAY AGAIN", GetScreenWidth() / 2 - MeasureText("PRESS [ENTER] TO PLAY AGAIN", 20) / 2, GetScreenHeight() / 2 - 50, 20, GRAY);
 

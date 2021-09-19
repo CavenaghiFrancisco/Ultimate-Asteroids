@@ -41,6 +41,13 @@ private:
 	Textures* rightClick;
 	Texture2D leftClickTexture;
 	Textures* leftClick;
+	Texture2D buttonPauseTexture;
+	Textures* buttonPause;
+	Rectangle buttonP;
+	Texture2D buttonTexture;
+	Texture2D buttonPushedTexture;
+	Textures* buttonResumePlayAgain;
+	Textures* buttonMenuExit;
 	float timerPowerUp;
 	PowerUp moreBulletsPowerUp;
 	PowerUp shieldPowerUp;
