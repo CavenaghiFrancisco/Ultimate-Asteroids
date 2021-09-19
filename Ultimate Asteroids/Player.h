@@ -6,7 +6,8 @@ class Player {
 private:
 	Vector2 position;
     Vector2 speed;
-    float acceleration;
+    Vector2 acceleration;
+    Vector2 direction;
     float rotation;
     Vector2 collider;
     float radius;
@@ -23,14 +24,11 @@ public:
     const int screenHeight = 768;
     Player();
     ~Player();
-    Vector2 accel;
     Vector2 GetSpeed();
-    void UpdateSpeed();
     float GetAcceleration();
-    void UpdateAcceleration();
     Vector2 GetPosition();
-    void UpdatePosition();
     void DrawPlayer();
+    void Movement();
     float GetRotation();
     void SetRotation(float _rotation);
     float GetRadius();

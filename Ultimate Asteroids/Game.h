@@ -37,6 +37,10 @@ private:
 	Textures* moreBullets;
 	Texture2D shieldTexture;
 	Textures* shield;
+	Texture2D rightClickTexture;
+	Textures* rightClick;
+	Texture2D leftClickTexture;
+	Textures* leftClick;
 	float timerPowerUp;
 	PowerUp moreBulletsPowerUp;
 	PowerUp shieldPowerUp;

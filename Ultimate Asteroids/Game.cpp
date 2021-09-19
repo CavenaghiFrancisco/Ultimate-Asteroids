@@ -48,8 +48,8 @@ bool Game::GetInited() {
 
 void Game::InitGame() {
     HideCursor();
-    shieldPowerUp = { {(float)GetRandomValue(20,(GetScreenHeight() - 20)),(float)GetRandomValue(20,GetScreenHeight() - 20)},20,false,false };
-    moreBulletsPowerUp = { {(float)GetRandomValue(20,(GetScreenHeight() - 20)),(float)GetRandomValue(20,GetScreenHeight() - 20)},20,false,false };
+    shieldPowerUp = { {(float)GetRandomValue(100,(GetScreenHeight() - 100)),(float)GetRandomValue(100,GetScreenHeight() - 100)},60,false,false };
+    moreBulletsPowerUp = { {(float)GetRandomValue(100,(GetScreenHeight() - 100)),(float)GetRandomValue(100,GetScreenHeight() - 100)},60,false,false };
     backgroundColorTexture = { 0,0,(float)GetScreenWidth(),(float)GetScreenHeight() };
     int posx, posy;
     int velx, vely;
@@ -66,6 +66,8 @@ void Game::InitGame() {
     sight = new Textures();
     moreBullets = new Textures();
     shield = new Textures();
+    rightClick = new Textures();
+    leftClick = new Textures();
     // Initialization player
 
     destroyedMeteorsCount = 0;
@@ -162,6 +164,15 @@ void Game::InitGame() {
     moreBulletsTexture.width = 60;
     moreBulletsTexture.height = 60;
     moreBullets->SetTextureData(moreBulletsTexture, moreBulletsPowerUp.position.x, moreBulletsPowerUp.position.y, moreBulletsTexture.width, moreBulletsTexture.height);
+    rightClickTexture = LoadTexture("rightClick.png");
+    rightClickTexture.width = 80;
+    rightClickTexture.height = 80;
+    rightClick->SetTextureData(rightClickTexture, GetScreenWidth() / 2 + 20, GetScreenHeight() - rightClickTexture.height - 20, rightClickTexture.width, rightClickTexture.height);
+    leftClickTexture = LoadTexture("leftClick.png");
+    leftClickTexture.width = 80;
+    leftClickTexture.height = 80;
+    leftClick->SetTextureData(leftClickTexture, GetScreenWidth() / 2 - leftClickTexture.width -20, GetScreenHeight() - leftClickTexture.height - 20, leftClickTexture.width, leftClickTexture.height);
+
 
 
 }
@@ -193,14 +204,8 @@ void Game::UpdateGame() {
             scrolling -= 0.5f;
             if (scrolling <= -backgroundGameTexture.width * 2) scrolling = 0;
             ship->SetTextureData(shipTexture, player->GetPosition().x - player->GetRadius() / 2, player->GetPosition().y - player->GetRadius() / 2, player->GetRadius(), player->GetRadius());
-            // Player logic: speed
-            player->UpdateSpeed();
-
-            // Player logic: acceleration
-            player->UpdateAcceleration();
-
             // Player logic: movement
-            player->UpdatePosition();
+            player->Movement();
 
             //Collision logic: player vs walls
             if (player->GetPosition().x > screenWidth + player->GetRadius()) player->SetPositionX(-(player->GetRadius()));
@@ -449,7 +454,8 @@ void Game::DrawGame() {
         for (int i = 0; i < (player->GetBullets() ? player->playerMaxShoots : player->playerMaxShoots / 2); i++) {
             if (shoots[i]->GetActive()) DrawCircleV(shoots[i]->GetPosition(), shoots[i]->GetRadius(), SKYBLUE);
         }
-
+        DrawTextureRec(rightClickTexture, rightClick->GetFrameRec(), rightClick->GetPosition(), WHITE);
+        DrawTextureRec(leftClickTexture, leftClick->GetFrameRec(), leftClick->GetPosition(), WHITE);
 
         if (victory) {
             { DrawText("VICTORY", screenWidth / 2 - MeasureText("VICTORY", 80) / 2, screenHeight / 2 - 40, 80, LIGHTGRAY); }
