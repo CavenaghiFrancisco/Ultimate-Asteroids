@@ -3,7 +3,12 @@
 #include "Player.h"
 #include "Shoot.h"
 
-
+struct PowerUp {
+	Vector2 position;
+	float radius;
+	bool active;
+	bool alreadySpawned;
+};
 
 class Game {
 private:
@@ -12,7 +17,7 @@ private:
 	bool replay;
 	bool isPaused;
 	Player* player;
-	Shoot* shoots[5];
+	Shoot* shoots[6];
 	float scrolling;
 	Texture2D backgroundGameTexture;
 	Textures* backgroundGame;
@@ -33,7 +38,8 @@ private:
 	Texture2D shieldTexture;
 	Textures* shield;
 	float timerPowerUp;
-
+	PowerUp moreBulletsPowerUp;
+	PowerUp shieldPowerUp;
 public:
 	const int screenWidth = 1366;
 	const int screenHeight = 768;

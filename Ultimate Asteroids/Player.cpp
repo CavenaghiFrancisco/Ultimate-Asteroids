@@ -12,6 +12,7 @@ Player::Player() {
     rotation = 0;
     color = { (unsigned char)113,(unsigned char)216 , (unsigned char)228 , 150 };
     shield = false;
+    bullet = false;
 }
 
 Player::~Player() {

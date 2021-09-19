@@ -15,7 +15,7 @@ private:
     bool shield;
     bool bullet;
 public:
-    const int playerMaxShoots = 3;
+    const int playerMaxShoots = 6;
     const int playerSpeed = 300;
     const int screenWidth = 1366;
     

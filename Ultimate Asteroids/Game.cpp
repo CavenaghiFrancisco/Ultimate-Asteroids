@@ -3,7 +3,7 @@
 
 
 
-const int maxBigMeteors = 1;
+const int maxBigMeteors = 10;
 const int maxMediumMeteors = maxBigMeteors * 2;
 const int maxSmallMeteors = maxMediumMeteors * 2;
 const int meteorSpeed = 30;
@@ -16,12 +16,7 @@ struct Meteor {
     Color color;
 };
 
-struct PowerUp {
-    Vector2 position;
-    float radius;
-    bool active;
-    bool alreadySpawned;
-};
+
 
 bool gameOver = false;
 bool pause = false;
@@ -31,8 +26,6 @@ bool victory = false;
 Meteor bigMeteor[maxBigMeteors] = { 0 };
 Meteor mediumMeteor[maxMediumMeteors] = { 0 };
 Meteor smallMeteor[maxSmallMeteors] = { 0 };
-PowerUp moreBulletsPowerUp = { {GetRandomValue(20,(GetScreenWidth() - 20)),GetRandomValue(20,GetScreenHeight() - 20)},20,false,false };
-PowerUp shieldPowerUp = { {GetRandomValue(20,(GetScreenHeight() - 20)),GetRandomValue(20,GetScreenHeight() - 20)},20,false,false };
 
 int midMeteorsCount = 0;
 int smallMeteorsCount = 0;
@@ -55,7 +48,8 @@ bool Game::GetInited() {
 
 void Game::InitGame() {
     HideCursor();
-    
+    shieldPowerUp = { {(float)GetRandomValue(20,(GetScreenHeight() - 20)),(float)GetRandomValue(20,GetScreenHeight() - 20)},20,false,false };
+    moreBulletsPowerUp = { {(float)GetRandomValue(20,(GetScreenHeight() - 20)),(float)GetRandomValue(20,GetScreenHeight() - 20)},20,false,false };
     backgroundColorTexture = { 0,0,(float)GetScreenWidth(),(float)GetScreenHeight() };
     int posx, posy;
     int velx, vely;
@@ -77,7 +71,7 @@ void Game::InitGame() {
     destroyedMeteorsCount = 0;
 
     // Initialization shoot
-    for (int i = 0; i < 5; i++) {
+    for (int i = 0; i < player->playerMaxShoots; i++) {
         shoots[i] = new Shoot();
     }
 
@@ -161,11 +155,14 @@ void Game::InitGame() {
     smallMeteorsTexture.width = smallMeteor->radius;
     smallMeteorsTexture.height = smallMeteor->radius;
     shieldTexture = LoadTexture("shieldPowerUp.png");
-    shieldTexture.width = 20;
-    shieldTexture.height = 20;
+    shieldTexture.width = 60;
+    shieldTexture.height = 60;
+    shield->SetTextureData(shieldTexture, shieldPowerUp.position.x, shieldPowerUp.position.y, shieldTexture.width, shieldTexture.height);
     moreBulletsTexture = LoadTexture("moreBulletsPowerUp.png");
-    moreBulletsTexture.width = 20;
-    moreBulletsTexture.height = 20;
+    moreBulletsTexture.width = 60;
+    moreBulletsTexture.height = 60;
+    moreBullets->SetTextureData(moreBulletsTexture, moreBulletsPowerUp.position.x, moreBulletsPowerUp.position.y, moreBulletsTexture.width, moreBulletsTexture.height);
+
 
 }
 
@@ -185,11 +182,11 @@ void Game::UpdateGame() {
         if (!pause) {
 
             timerPowerUp += GetFrameTime();
-            if (timerPowerUp > 10 && !moreBulletsPowerUp.active && !moreBulletsPowerUp.alreadySpawned) {
+            if (timerPowerUp > 5 && !moreBulletsPowerUp.active && !moreBulletsPowerUp.alreadySpawned) {
                 moreBulletsPowerUp.active = true;
                 moreBulletsPowerUp.alreadySpawned = true;
             }
-            if (timerPowerUp > 20 && !shieldPowerUp.active && !shieldPowerUp.alreadySpawned) {
+            if (timerPowerUp > 10 && !shieldPowerUp.active && !shieldPowerUp.alreadySpawned) {
                 shieldPowerUp.active = true;
                 shieldPowerUp.alreadySpawned = true;
             }
@@ -216,7 +213,7 @@ void Game::UpdateGame() {
                 if (player->Vector2Length(player->Vector2Subtract(GetMousePosition(), player->GetPosition())) > 30.0f) {
                     player->SetRotation(player->Vector2Angle(player->GetPosition(), GetMousePosition()) + 90);
                 }
-                for (int i = 0; i < player->playerMaxShoots; i++) {
+                for (int i = 0; i < (player->GetBullets() ? player->playerMaxShoots : player->playerMaxShoots / 2); i++) {
                     if (!shoots[i]->GetActive()) {
                         shoots[i]->SetPositionX(player->GetPosition().x + (float)sin(player->GetRotation() * DEG2RAD) * (player->GetRadius()));
                         shoots[i]->SetPositionY(player->GetPosition().y - (float)cos(player->GetRotation() * DEG2RAD) * (player->GetRadius()));
@@ -232,12 +229,12 @@ void Game::UpdateGame() {
 
 
             // Shoot life timer
-            for (int i = 0; i < player->playerMaxShoots; i++) {
+            for (int i = 0; i < (player->GetBullets() ? player->playerMaxShoots : player->playerMaxShoots / 2); i++) {
                 shoots[i]->LifeTimer();
             }
 
             // Shot logic
-            for (int i = 0; i < player->playerMaxShoots; i++) {
+            for (int i = 0; i < (player->GetBullets() ? player->playerMaxShoots : player->playerMaxShoots / 2); i++) {
                 shoots[i]->Shot();
             }
 
@@ -256,24 +253,27 @@ void Game::UpdateGame() {
             }
 
             for (int a = 0; a < maxBigMeteors; a++) {
-                if (CheckCollisionCircles({ player->GetPosition().x, player->GetPosition().y }, player->GetRadius(), bigMeteor[a].position, bigMeteor[a].radius) && bigMeteor[a].active) gameOver = true;
+                if (CheckCollisionCircles({ player->GetPosition().x, player->GetPosition().y }, player->GetRadius(), bigMeteor[a].position, bigMeteor[a].radius) && bigMeteor[a].active && !player->GetShield()) gameOver = true;
                 else if (CheckCollisionCircles({ player->GetPosition().x, player->GetPosition().y }, player->GetRadius(), bigMeteor[a].position, bigMeteor[a].radius) && bigMeteor[a].active && player->GetShield()) {
                     bigMeteor[a].active = false;
+                    destroyedMeteorsCount += 7;
                     player->SetShield(false);
                 }
             }
 
             for (int a = 0; a < maxMediumMeteors; a++) {
-                if (CheckCollisionCircles({ player->GetPosition().x,  player->GetPosition().y }, player->GetRadius(), mediumMeteor[a].position, mediumMeteor[a].radius) && mediumMeteor[a].active) gameOver = true;
+                if (CheckCollisionCircles({ player->GetPosition().x,  player->GetPosition().y }, player->GetRadius(), mediumMeteor[a].position, mediumMeteor[a].radius) && mediumMeteor[a].active && !player->GetShield()) gameOver = true;
                 else if (CheckCollisionCircles({ player->GetPosition().x, player->GetPosition().y }, player->GetRadius(), mediumMeteor[a].position, mediumMeteor[a].radius) && mediumMeteor[a].active && player->GetShield()) {
                     mediumMeteor[a].active = false;
+                    destroyedMeteorsCount += 3;
                     player->SetShield(false);
                 }
             }
             for (int a = 0; a < maxSmallMeteors; a++) {
-                if (CheckCollisionCircles({ player->GetPosition().x,  player->GetPosition().y }, player->GetRadius(), smallMeteor[a].position, smallMeteor[a].radius) && smallMeteor[a].active) gameOver = true;
+                if (CheckCollisionCircles({ player->GetPosition().x,  player->GetPosition().y }, player->GetRadius(), smallMeteor[a].position, smallMeteor[a].radius) && smallMeteor[a].active && !player->GetShield()) gameOver = true;
                 else if (CheckCollisionCircles({ player->GetPosition().x, player->GetPosition().y }, player->GetRadius(), smallMeteor[a].position, smallMeteor[a].radius) && smallMeteor[a].active && player->GetShield()) {
                     smallMeteor[a].active = false;
+                    destroyedMeteorsCount += 1;
                     player->SetShield(false);
                 }
             }
@@ -324,7 +324,7 @@ void Game::UpdateGame() {
             }
 
             // Collision logic: player-shoots vs meteors
-            for (int i = 0; i < player->playerMaxShoots; i++) {
+            for (int i = 0; i < (player->GetBullets() ? player->playerMaxShoots : player->playerMaxShoots / 2); i++) {
                 if ((shoots[i]->GetActive())) {
                     for (int a = 0; a < maxBigMeteors; a++) {
                         if (bigMeteor[a].active && CheckCollisionCircles(shoots[i]->GetPosition(), shoots[i]->GetRadius(), bigMeteor[a].position, bigMeteor[a].radius)) {
@@ -437,13 +437,16 @@ void Game::DrawGame() {
                 DrawTexturePro(smallMeteorsTexture, smallMeteors->GetFrameRec(), { smallMeteors->GetPosition().x,  smallMeteors->GetPosition().y, (float)smallMeteorsTexture.width * 2.0f , (float)smallMeteorsTexture.height * 2.0f }, { (float)smallMeteorsTexture.width,(float)smallMeteorsTexture.height }, smallMeteor[i].rotation >= 360 ? smallMeteor[i].rotation = 0 : smallMeteor[i].rotation += 1, WHITE);
             }
         }
-        if (moreBulletsPowerUp.active) {
+        if (shieldPowerUp.active) {
             DrawTextureRec(shieldTexture, shield->GetFrameRec(), shield->GetPosition(), WHITE);
+        }
+        if (moreBulletsPowerUp.active) {
+            DrawTextureRec(moreBulletsTexture, moreBullets->GetFrameRec(), moreBullets->GetPosition(), WHITE);
         }
         DrawTextureEx(sightTexture, { GetMousePosition().x - sightTexture.width / 2,GetMousePosition().y - sightTexture.height / 2 }, 0.0f, 1.0f, WHITE);
         if(player->GetShield())player->DrawPlayer();
         // Draw shoot
-        for (int i = 0; i < player->playerMaxShoots; i++) {
+        for (int i = 0; i < (player->GetBullets() ? player->playerMaxShoots : player->playerMaxShoots / 2); i++) {
             if (shoots[i]->GetActive()) DrawCircleV(shoots[i]->GetPosition(), shoots[i]->GetRadius(), SKYBLUE);
         }
 
