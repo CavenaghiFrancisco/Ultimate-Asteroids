@@ -33,10 +33,56 @@ int destroyedMeteorsCount = 0;
 
 Game::Game() {
     gameInited = false;
+    gameOver = false;
+    moreBulletsPowerUp.alreadySpawned = false;
+    shieldPowerUp.alreadySpawned = false;
+    player = new Player();
+    backgroundGame = new Textures();
+    ship = new Textures();
+    bigMeteors = new Textures();
+    mediumMeteors = new Textures();
+    smallMeteors = new Textures();
+    sight = new Textures();
+    moreBullets = new Textures();
+    shield = new Textures();
+    rightClick = new Textures();
+    leftClick = new Textures();
+    buttonPause = new Textures();
+    buttonResumePlayAgain = new Textures();
+    buttonMenuExit = new Textures();
 }
 
 Game::~Game() {
-
+    delete player;
+    delete backgroundGame;
+    delete ship;
+    delete bigMeteors;
+    delete mediumMeteors;
+    delete smallMeteors;
+    delete sight;
+    delete moreBullets;
+    delete shield;
+    delete rightClick;
+    delete leftClick;
+    delete buttonPause;
+    delete buttonResumePlayAgain;
+    delete buttonMenuExit;
+    for (int i = 0; i < player->playerMaxShoots; i++) {
+        delete shoots[i];
+    }
+    UnloadTexture(sightTexture);
+    UnloadTexture(backgroundGameTexture);
+    UnloadTexture(shipTexture);
+    UnloadTexture(bigMeteorsTexture);
+    UnloadTexture(mediumMeteorsTexture);
+    UnloadTexture(smallMeteorsTexture);
+    UnloadTexture(shieldTexture);
+    UnloadTexture(moreBulletsTexture);
+    UnloadTexture(shieldTexture);
+    UnloadTexture(rightClickTexture);
+    UnloadTexture(leftClickTexture);
+    UnloadTexture(buttonTexture);
+    UnloadTexture(buttonPushedTexture);
 }
 
 bool Game::GetInited() {
@@ -54,20 +100,9 @@ void Game::InitGame() {
     victory = false;
     pause = false;
     timerPowerUp = 0.0f;
-    player = new Player();
-    backgroundGame = new Textures();
-    ship = new Textures();
-    bigMeteors = new Textures();
-    mediumMeteors = new Textures();
-    smallMeteors = new Textures();
-    sight = new Textures();
-    moreBullets = new Textures();
-    shield = new Textures();
-    rightClick = new Textures();
-    leftClick = new Textures();
-    buttonPause = new Textures();
-    buttonResumePlayAgain = new Textures();
-    buttonMenuExit = new Textures();
+    
+
+
     // Initialization player
 
     destroyedMeteorsCount = 0;
@@ -143,7 +178,6 @@ void Game::InitGame() {
     backgroundGameTexture = LoadTexture("background1.png");
     backgroundGameTexture.width = GetScreenWidth();
     backgroundGameTexture.height = GetScreenHeight();
-    backgroundGame->SetTextureData(backgroundGameTexture, 0, 0, backgroundGame->GetWidth(), backgroundGame->GetHeight());
     shipTexture = LoadTexture("Lv3.png");
     shipTexture.width = player->GetRadius();
     shipTexture.height = player->GetRadius();
@@ -159,19 +193,15 @@ void Game::InitGame() {
     shieldTexture = LoadTexture("shieldPowerUp.png");
     shieldTexture.width = 60;
     shieldTexture.height = 60;
-    shield->SetTextureData(shieldTexture, shieldPowerUp.position.x, shieldPowerUp.position.y, shieldTexture.width, shieldTexture.height);
     moreBulletsTexture = LoadTexture("moreBulletsPowerUp.png");
     moreBulletsTexture.width = 60;
     moreBulletsTexture.height = 60;
-    moreBullets->SetTextureData(moreBulletsTexture, moreBulletsPowerUp.position.x, moreBulletsPowerUp.position.y, moreBulletsTexture.width, moreBulletsTexture.height);
     rightClickTexture = LoadTexture("rightClick.png");
     rightClickTexture.width = 80;
     rightClickTexture.height = 80;
-    rightClick->SetTextureData(rightClickTexture, GetScreenWidth() / 2 + 20, GetScreenHeight() - rightClickTexture.height - 20, rightClickTexture.width, rightClickTexture.height);
     leftClickTexture = LoadTexture("leftClick.png");
     leftClickTexture.width = 80;
     leftClickTexture.height = 80;
-    leftClick->SetTextureData(leftClickTexture, GetScreenWidth() / 2 - leftClickTexture.width -20, GetScreenHeight() - leftClickTexture.height - 20, leftClickTexture.width, leftClickTexture.height);
     buttonPauseTexture = LoadTexture("pause.png");
     buttonPauseTexture.width = 100;
     buttonPauseTexture.height = 100;
@@ -181,19 +211,42 @@ void Game::InitGame() {
     buttonPushedTexture = LoadTexture("button_pushed.png");
     buttonPushedTexture.width = 310;
     buttonPushedTexture.height = 100;
-    buttonPause->SetTextureData(buttonPauseTexture, GetScreenWidth() - buttonPauseTexture.width, 0, buttonPauseTexture.width, buttonPauseTexture.height);
     buttonP = { buttonPause->GetPosition().x,buttonPause->GetPosition().y ,(float)buttonPause->GetWidth() ,(float)buttonPause->GetHeight() };
-    buttonResumePlayAgain->SetTextureData(buttonPushedTexture, GetScreenWidth()/2 - buttonTexture.width - 20, GetScreenHeight()/2 + 50, buttonTexture.width, buttonTexture.height);
-    buttonMenuExit->SetTextureData(buttonPushedTexture, GetScreenWidth() / 2 + 20, GetScreenHeight() / 2 + 50, buttonTexture.width, buttonTexture.height);
     buttonResumeArea = { buttonResumePlayAgain->GetPosition().x,buttonResumePlayAgain->GetPosition().y,(float)buttonResumePlayAgain->GetWidth(),(float)buttonResumePlayAgain->GetHeight() };
     buttonExitArea = { buttonMenuExit->GetPosition().x,buttonMenuExit->GetPosition().y,(float)buttonMenuExit->GetWidth(),(float)buttonMenuExit->GetHeight() };
-
+    backgroundGame->SetTextureData(backgroundGameTexture, 0, 0, backgroundGame->GetWidth(), backgroundGame->GetHeight());
+    shield->SetTextureData(shieldTexture, shieldPowerUp.position.x, shieldPowerUp.position.y, shieldTexture.width, shieldTexture.height);
+    moreBullets->SetTextureData(moreBulletsTexture, moreBulletsPowerUp.position.x, moreBulletsPowerUp.position.y, moreBulletsTexture.width, moreBulletsTexture.height);
+    rightClick->SetTextureData(rightClickTexture, GetScreenWidth() / 2 + 20, GetScreenHeight() - rightClickTexture.height - 20, rightClickTexture.width, rightClickTexture.height);
+    leftClick->SetTextureData(leftClickTexture, GetScreenWidth() / 2 - leftClickTexture.width - 20, GetScreenHeight() - leftClickTexture.height - 20, leftClickTexture.width, leftClickTexture.height);
+    buttonPause->SetTextureData(buttonPauseTexture, GetScreenWidth() - buttonPauseTexture.width, 0, buttonPauseTexture.width, buttonPauseTexture.height);
+    buttonResumePlayAgain->SetTextureData(buttonPushedTexture, GetScreenWidth() / 2 - buttonTexture.width - 20, GetScreenHeight() / 2 + 50, buttonTexture.width, buttonTexture.height);
+    buttonMenuExit->SetTextureData(buttonPushedTexture, GetScreenWidth() / 2 + 20, GetScreenHeight() / 2 + 50, buttonTexture.width, buttonTexture.height);
 
 }
 
 void Game::InputGame() {
+    if (pause) {
+        if (CheckCollisionPointRec(GetMousePosition(), buttonResumeArea) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+            pause = !pause;
+        }
+        if (CheckCollisionPointRec(GetMousePosition(), buttonExitArea) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+            goToMenu = true;
+        }
+    }
     if (victory) {
-        if (IsKeyPressed(KEY_ENTER)) {
+        if (CheckCollisionPointRec(GetMousePosition(), buttonResumeArea) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+            goToGame = true;
+        }
+        if (CheckCollisionPointRec(GetMousePosition(), buttonExitArea) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+            goToMenu = true;
+        }
+    }
+    if (gameOver) {
+        if (CheckCollisionPointRec(GetMousePosition(), buttonResumeArea) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+            goToGame = true;
+        }
+        if (CheckCollisionPointRec(GetMousePosition(), buttonExitArea) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
             goToMenu = true;
         }
     }
@@ -220,6 +273,7 @@ void Game::UpdateGame() {
             scrolling -= 0.5f;
             if (scrolling <= -backgroundGameTexture.width * 2) scrolling = 0;
             ship->SetTextureData(shipTexture, player->GetPosition().x - player->GetRadius() / 2, player->GetPosition().y - player->GetRadius() / 2, player->GetRadius(), player->GetRadius());
+            
             // Player logic: movement
             player->Movement();
 
@@ -413,14 +467,7 @@ void Game::UpdateGame() {
     }
         if (destroyedMeteorsCount == maxBigMeteors + maxMediumMeteors + maxSmallMeteors) {
             victory = true;
-        }
-        else {
-            if (IsKeyPressed(KEY_ENTER)) {
-                InitGame();
-                gameOver = false;
-            }
-        }
-    
+        }    
 }
 
 void Game::DrawGame() {
@@ -478,44 +525,73 @@ void Game::DrawGame() {
             if (CheckCollisionPointRec(GetMousePosition(), buttonResumeArea)) {
                 buttonResumePlayAgain->SetTexture(buttonTexture);
                 DrawTextureRec(buttonTexture, buttonResumePlayAgain->GetFrameRec(), buttonResumePlayAgain->GetPosition(), WHITE);
+                DrawText("PLAY AGAIN", 415, 470, 30, SKYBLUE);
             }
             else {
                 buttonResumePlayAgain->SetTexture(buttonPushedTexture);
                 DrawTextureRec(buttonPushedTexture, buttonResumePlayAgain->GetFrameRec(), buttonResumePlayAgain->GetPosition(), WHITE);
+                DrawText("PLAY AGAIN", 415, 470, 30, DARKGRAY);
             }
             if (CheckCollisionPointRec(GetMousePosition(), buttonExitArea)) {
                 buttonMenuExit->SetTexture(buttonTexture);
                 DrawTextureRec(buttonTexture, buttonMenuExit->GetFrameRec(), buttonMenuExit->GetPosition(), WHITE);
+                DrawText("MENU", 810, 470, 30, SKYBLUE);
             }
             else {
                 buttonMenuExit->SetTexture(buttonPushedTexture);
                 DrawTextureRec(buttonPushedTexture, buttonMenuExit->GetFrameRec(), buttonMenuExit->GetPosition(), WHITE);
+                DrawText("MENU", 810, 470, 30, DARKGRAY);
             }
         }
 
         if (pause) {
-            DrawText("GAME PAUSED", screenWidth / 2 - MeasureText("GAME PAUSED", 40) / 2, screenHeight / 2 - 40, 40, GRAY); 
-            /*DrawRectangle(buttonResumeArea.x+20, buttonResumeArea.y+10, buttonResumeArea.width-30, buttonResumeArea.height-20, RED);
-            DrawRectangle(buttonExitArea.x+20, buttonExitArea.y+10, buttonExitArea.width-30, buttonExitArea.height-20, RED);*/
+            DrawText("GAME PAUSED", screenWidth / 2 - MeasureText("GAME PAUSED", 40) / 2, screenHeight / 2 - 40, 40, WHITE); 
             if (CheckCollisionPointRec(GetMousePosition(), buttonResumeArea)) {
                 buttonResumePlayAgain->SetTexture(buttonTexture);
                 DrawTextureRec(buttonTexture, buttonResumePlayAgain->GetFrameRec(), buttonResumePlayAgain->GetPosition(), WHITE);
+                DrawText("RESUME", 440, 470, 30, SKYBLUE);
             }
             else {
                 buttonResumePlayAgain->SetTexture(buttonPushedTexture);
                 DrawTextureRec(buttonPushedTexture, buttonResumePlayAgain->GetFrameRec(), buttonResumePlayAgain->GetPosition(), WHITE);
+                DrawText("RESUME", 440, 470, 30, DARKGRAY);
             }
             if (CheckCollisionPointRec(GetMousePosition(), buttonExitArea)) {
                 buttonMenuExit->SetTexture(buttonTexture);
                 DrawTextureRec(buttonTexture, buttonMenuExit->GetFrameRec(), buttonMenuExit->GetPosition(), WHITE);
+                DrawText("MENU", 810, 470, 30, SKYBLUE);
             }
             else {
                 buttonMenuExit->SetTexture(buttonPushedTexture);
                 DrawTextureRec(buttonPushedTexture, buttonMenuExit->GetFrameRec(), buttonMenuExit->GetPosition(), WHITE);
+                DrawText("MENU", 810, 470, 30, DARKGRAY);
             }            
         }
     }
-    else DrawText("PRESS [ENTER] TO PLAY AGAIN", GetScreenWidth() / 2 - MeasureText("PRESS [ENTER] TO PLAY AGAIN", 20) / 2, GetScreenHeight() / 2 - 50, 20, GRAY);
+    else {
+        DrawText("DEFEAT", screenWidth / 2 - MeasureText("DEFEAT", 80) / 2, screenHeight / 2 - 40, 80, LIGHTGRAY);
+        if (CheckCollisionPointRec(GetMousePosition(), buttonResumeArea)) {
+            buttonResumePlayAgain->SetTexture(buttonTexture);
+            DrawTextureRec(buttonTexture, buttonResumePlayAgain->GetFrameRec(), buttonResumePlayAgain->GetPosition(), WHITE);
+            DrawText("TRY AGAIN", 420, 470, 30, SKYBLUE);
+        }
+        else {
+            buttonResumePlayAgain->SetTexture(buttonPushedTexture);
+            DrawTextureRec(buttonPushedTexture, buttonResumePlayAgain->GetFrameRec(), buttonResumePlayAgain->GetPosition(), WHITE);
+            DrawText("TRY AGAIN", 420, 470, 30, DARKGRAY);
+        }
+        if (CheckCollisionPointRec(GetMousePosition(), buttonExitArea)) {
+            buttonMenuExit->SetTexture(buttonTexture);
+            DrawTextureRec(buttonTexture, buttonMenuExit->GetFrameRec(), buttonMenuExit->GetPosition(), WHITE);
+            DrawText("MENU", 810, 470, 30, SKYBLUE);
+        }
+        else {
+            buttonMenuExit->SetTexture(buttonPushedTexture);
+            DrawTextureRec(buttonPushedTexture, buttonMenuExit->GetFrameRec(), buttonMenuExit->GetPosition(), WHITE);
+            DrawText("MENU", 810, 470, 30, DARKGRAY);
+        }
+        DrawTextureEx(sightTexture, { GetMousePosition().x - sightTexture.width / 2,GetMousePosition().y - sightTexture.height / 2 }, 0.0f, 1.0f, WHITE);
+    }
 
     EndDrawing();
 }
@@ -533,4 +609,8 @@ void Game::UpdateDrawFrame() {
 
 bool Game::GoToMenu() {
     return goToMenu;
+}
+
+bool Game::GoToGame() {
+    return goToGame;
 }

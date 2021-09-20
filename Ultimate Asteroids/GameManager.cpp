@@ -79,6 +79,12 @@ void GameManager::UpdateState(STATES states) {
 			delete game;
 			isThisStateStarting = true;
 		}
+		else if (game->GoToGame()) {
+			currentState = STATES::GAME;
+			game->DeInitGame();
+			delete game;
+			isThisStateStarting = true;
+		}
 		break;
 	/*case STATES::SHOP:
 		break;*/

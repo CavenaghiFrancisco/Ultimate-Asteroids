@@ -15,6 +15,7 @@ Intro::Intro() {
 
 Intro::~Intro() {
 	delete logo;
+	delete GM;
 	UnloadMusicStream(introLogoAudio);
 	UnloadTexture(logoTexture);
 }

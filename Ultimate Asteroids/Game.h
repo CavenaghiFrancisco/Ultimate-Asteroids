@@ -16,6 +16,7 @@ private:
 	bool goToMenu;
 	bool replay;
 	bool isPaused;
+	bool goToGame;
 	Player* player;
 	Shoot* shoots[6];
 	float scrolling;
@@ -70,6 +71,7 @@ public:
 	void DeInitGame();       // Unload game
 	void UpdateDrawFrame();  // Update and Draw (one frame)
 	bool GoToMenu();
+	bool GoToGame();
 };
 
 
