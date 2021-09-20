@@ -183,8 +183,10 @@ void Game::InitGame() {
     buttonPushedTexture.height = 100;
     buttonPause->SetTextureData(buttonPauseTexture, GetScreenWidth() - buttonPauseTexture.width, 0, buttonPauseTexture.width, buttonPauseTexture.height);
     buttonP = { buttonPause->GetPosition().x,buttonPause->GetPosition().y ,(float)buttonPause->GetWidth() ,(float)buttonPause->GetHeight() };
-    buttonResumePlayAgain->SetTextureData(buttonTexture, GetScreenWidth()/2 - buttonTexture.width - 20, GetScreenHeight()/2 + 50, buttonTexture.width, buttonTexture.height);
-    buttonMenuExit->SetTextureData(buttonTexture, GetScreenWidth() / 2 + 20, GetScreenHeight() / 2 + 50, buttonTexture.width, buttonTexture.height);
+    buttonResumePlayAgain->SetTextureData(buttonPushedTexture, GetScreenWidth()/2 - buttonTexture.width - 20, GetScreenHeight()/2 + 50, buttonTexture.width, buttonTexture.height);
+    buttonMenuExit->SetTextureData(buttonPushedTexture, GetScreenWidth() / 2 + 20, GetScreenHeight() / 2 + 50, buttonTexture.width, buttonTexture.height);
+    buttonResumeArea = { buttonResumePlayAgain->GetPosition().x,buttonResumePlayAgain->GetPosition().y,(float)buttonResumePlayAgain->GetWidth(),(float)buttonResumePlayAgain->GetHeight() };
+    buttonExitArea = { buttonMenuExit->GetPosition().x,buttonMenuExit->GetPosition().y,(float)buttonMenuExit->GetWidth(),(float)buttonMenuExit->GetHeight() };
 
 
 }
@@ -473,12 +475,44 @@ void Game::DrawGame() {
         DrawTextureRec(buttonPauseTexture, buttonPause->GetFrameRec(), buttonPause->GetPosition(), WHITE);
         if (victory) {
             { DrawText("VICTORY", screenWidth / 2 - MeasureText("VICTORY", 80) / 2, screenHeight / 2 - 40, 80, LIGHTGRAY); }
+            if (CheckCollisionPointRec(GetMousePosition(), buttonResumeArea)) {
+                buttonResumePlayAgain->SetTexture(buttonTexture);
+                DrawTextureRec(buttonTexture, buttonResumePlayAgain->GetFrameRec(), buttonResumePlayAgain->GetPosition(), WHITE);
+            }
+            else {
+                buttonResumePlayAgain->SetTexture(buttonPushedTexture);
+                DrawTextureRec(buttonPushedTexture, buttonResumePlayAgain->GetFrameRec(), buttonResumePlayAgain->GetPosition(), WHITE);
+            }
+            if (CheckCollisionPointRec(GetMousePosition(), buttonExitArea)) {
+                buttonMenuExit->SetTexture(buttonTexture);
+                DrawTextureRec(buttonTexture, buttonMenuExit->GetFrameRec(), buttonMenuExit->GetPosition(), WHITE);
+            }
+            else {
+                buttonMenuExit->SetTexture(buttonPushedTexture);
+                DrawTextureRec(buttonPushedTexture, buttonMenuExit->GetFrameRec(), buttonMenuExit->GetPosition(), WHITE);
+            }
         }
 
         if (pause) {
             DrawText("GAME PAUSED", screenWidth / 2 - MeasureText("GAME PAUSED", 40) / 2, screenHeight / 2 - 40, 40, GRAY); 
-            DrawTextureRec(buttonTexture, buttonResumePlayAgain->GetFrameRec(), buttonResumePlayAgain->GetPosition(), WHITE);
-            DrawTextureRec(buttonTexture, buttonMenuExit->GetFrameRec(), buttonMenuExit->GetPosition(), WHITE);
+            /*DrawRectangle(buttonResumeArea.x+20, buttonResumeArea.y+10, buttonResumeArea.width-30, buttonResumeArea.height-20, RED);
+            DrawRectangle(buttonExitArea.x+20, buttonExitArea.y+10, buttonExitArea.width-30, buttonExitArea.height-20, RED);*/
+            if (CheckCollisionPointRec(GetMousePosition(), buttonResumeArea)) {
+                buttonResumePlayAgain->SetTexture(buttonTexture);
+                DrawTextureRec(buttonTexture, buttonResumePlayAgain->GetFrameRec(), buttonResumePlayAgain->GetPosition(), WHITE);
+            }
+            else {
+                buttonResumePlayAgain->SetTexture(buttonPushedTexture);
+                DrawTextureRec(buttonPushedTexture, buttonResumePlayAgain->GetFrameRec(), buttonResumePlayAgain->GetPosition(), WHITE);
+            }
+            if (CheckCollisionPointRec(GetMousePosition(), buttonExitArea)) {
+                buttonMenuExit->SetTexture(buttonTexture);
+                DrawTextureRec(buttonTexture, buttonMenuExit->GetFrameRec(), buttonMenuExit->GetPosition(), WHITE);
+            }
+            else {
+                buttonMenuExit->SetTexture(buttonPushedTexture);
+                DrawTextureRec(buttonPushedTexture, buttonMenuExit->GetFrameRec(), buttonMenuExit->GetPosition(), WHITE);
+            }            
         }
     }
     else DrawText("PRESS [ENTER] TO PLAY AGAIN", GetScreenWidth() / 2 - MeasureText("PRESS [ENTER] TO PLAY AGAIN", 20) / 2, GetScreenHeight() / 2 - 50, 20, GRAY);

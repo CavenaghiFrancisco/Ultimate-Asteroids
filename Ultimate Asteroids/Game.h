@@ -48,6 +48,8 @@ private:
 	Texture2D buttonPushedTexture;
 	Textures* buttonResumePlayAgain;
 	Textures* buttonMenuExit;
+	Rectangle buttonResumeArea;
+	Rectangle buttonExitArea;
 	float timerPowerUp;
 	PowerUp moreBulletsPowerUp;
 	PowerUp shieldPowerUp;
