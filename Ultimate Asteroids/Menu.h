@@ -36,6 +36,8 @@ private:
 	Rectangle returnButtonArea;
 	Texture2D returnButtonTexture;
 	Textures* returnButton;
+	Music menuSong;
+	Sound confirmation;
 public:
 	const float screenWidth = 1366;
 	const float screenHeight = 768;

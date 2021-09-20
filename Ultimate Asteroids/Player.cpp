@@ -44,9 +44,9 @@ void Player::Movement() {
     direction.x = GetMousePosition().x - position.x;
     direction.y = GetMousePosition().y - position.y;
 
-    if (Vector2Length(Vector2Subtract(GetMousePosition(), position)) > 60.0f) {
-        rotation = Vector2Angle(position, GetMousePosition()) + 90;
-    }
+    
+    rotation = Vector2Angle(position, GetMousePosition()) + 90;
+    
 
     
 
@@ -73,6 +73,10 @@ float Player::GetRotation() {
 
 float Player::GetRadius() {
     return radius;
+}
+
+void Player::SetRadius(float r) {
+    radius = r;
 }
 
 void Player::SetRotation(float _rotation) {

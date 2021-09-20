@@ -54,6 +54,11 @@ private:
 	float timerPowerUp;
 	PowerUp moreBulletsPowerUp;
 	PowerUp shieldPowerUp;
+	Music gameSong;
+	Sound laser;
+	Sound confirmation;
+	Sound shieldSound;
+	Sound explosion;
 public:
 	const int screenWidth = 1366;
 	const int screenHeight = 768;

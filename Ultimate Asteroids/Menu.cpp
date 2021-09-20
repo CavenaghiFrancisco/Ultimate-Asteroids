@@ -42,60 +42,68 @@ Menu::~Menu() {
 
 void Menu::Init() {
 	SetTargetFPS(60);
+	InitAudioDevice();
 	backgroundTexture = LoadTexture("background1.png");
 	buttonTexture = LoadTexture("button.png");
 	buttonPushedTexture = LoadTexture("button_pushed.png");
 	titleTexture = LoadTexture("title.png");
 	returnButtonTexture = LoadTexture("returnButton.png");
 	creditsTexture = LoadTexture("credits1.png");
-	
+	menuSong = LoadMusicStream("menuSong.mp3");
 	scrolling = 0.0f;
 	menuInited = true;
+	confirmation = LoadSound("confirmation.ogg");
+	
 }
 
 void Menu::Input() {
 	if (goToCredits) {
 		if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && CheckCollisionPointRec(GetMousePosition(), returnButtonArea)) {
 			goToCredits = false;
+			PlaySound(confirmation);
 		}
 	}
 	else {
 		if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && CheckCollisionPointRec(GetMousePosition(), button0Area)) 	{
 			goToGame = true;
+			PlaySound(confirmation);
 		}
 		if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && CheckCollisionPointRec(GetMousePosition(), button1Area)) {
 			if (GetScreenWidth() == 1366) {
-				SetWindowSize(800, 600);
+				SetWindowSize(1600, 900);
 			}
 			else {
 				SetWindowSize(1366, 768);
 			}
+			PlaySound(confirmation);
 		}
 		if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && CheckCollisionPointRec(GetMousePosition(), button2Area)) {
 			goToCredits = true;
+			PlaySound(confirmation);
 		}
 		if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && CheckCollisionPointRec(GetMousePosition(), button3Area)) {
 			exitGame = true;
+			PlaySound(confirmation);
 		}
 	}
+	PlayMusicStream(menuSong);
 }
 
 void Menu::Update() {
+	UpdateMusicStream(menuSong);
 	windowReSizeWidth = GetScreenWidth() / screenWidth;
 	windowReSizeHeight = GetScreenHeight() / screenHeight;
 	scrolling -= 0.5f;
 	if (scrolling <= -backgroundTexture.width * 2) scrolling = 0;
-
 	
 
-	
 
 	backgroundTexture.width = screenWidth;
 	backgroundTexture.height = screenHeight  ;
 	button0Area = { 525 * windowReSizeWidth  ,320 * windowReSizeHeight  ,320 * windowReSizeWidth  ,120 * windowReSizeHeight };
 
 
-	backgroundColorTexture = { 0,0,(float)screenWidth  ,(float)screenHeight   };
+	backgroundColorTexture = { 0,0,(float)screenWidth*windowReSizeWidth  ,(float)screenHeight * windowReSizeHeight };
 	button1Area = { 545 * windowReSizeWidth  ,485 * windowReSizeHeight  ,260 * windowReSizeWidth  ,60 * windowReSizeHeight };
 	button2Area = { 545 * windowReSizeWidth  ,585 * windowReSizeHeight  ,260 * windowReSizeWidth ,60 * windowReSizeHeight };
 	button3Area = { 545 * windowReSizeWidth  ,685 * windowReSizeHeight  ,260 * windowReSizeWidth  ,60 * windowReSizeHeight };

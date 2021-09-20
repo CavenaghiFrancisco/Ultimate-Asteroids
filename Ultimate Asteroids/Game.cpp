@@ -3,10 +3,10 @@
 
 
 
-const int maxBigMeteors = 1;
+const int maxBigMeteors = 8;
 const int maxMediumMeteors = maxBigMeteors * 2;
 const int maxSmallMeteors = maxMediumMeteors * 2;
-const int meteorSpeed = 30;
+const int meteorSpeed = 40;
 struct Meteor {
     Vector2 position;
     Vector2 speed;
@@ -91,19 +91,26 @@ bool Game::GetInited() {
 
 void Game::InitGame() {
     HideCursor();
-    shieldPowerUp = { {(float)GetRandomValue(100,(GetScreenHeight() - 100)),(float)GetRandomValue(100,GetScreenHeight() - 100)},60,false,false };
-    moreBulletsPowerUp = { {(float)GetRandomValue(100,(GetScreenHeight() - 100)),(float)GetRandomValue(100,GetScreenHeight() - 100)},60,false,false };
-    backgroundColorTexture = { 0,0,(float)GetScreenWidth(),(float)GetScreenHeight() };
+    shieldPowerUp = { {(float)GetRandomValue(100*windowReSizeWidth,(screenWidth*windowReSizeWidth - 100 * windowReSizeWidth)),(float)GetRandomValue(100 * windowReSizeHeight,(screenHeight* windowReSizeHeight - 100 * windowReSizeHeight))},30 * windowReSizeWidth,false,false };
+    moreBulletsPowerUp = { {(float)GetRandomValue(100 * windowReSizeWidth,(screenWidth * windowReSizeWidth - 100 * windowReSizeWidth)),(float)GetRandomValue(100 * windowReSizeHeight,(screenHeight * windowReSizeHeight - 100 * windowReSizeHeight))},30 * windowReSizeWidth,false,false };
+    backgroundColorTexture = { 0,0,(float)screenWidth * windowReSizeWidth,(float)screenHeight * windowReSizeHeight };
     int posx, posy;
     int velx, vely;
     bool correctRange = false;
     victory = false;
     pause = false;
     timerPowerUp = 0.0f;
+    confirmation = LoadSound("confirmation.ogg");
+    shieldSound = LoadSound("shield.ogg");
+    laser = LoadSound("laser.ogg");
+    gameSong = LoadMusicStream("gameSong.mp3");
     
-
+    player->SetRadius(player->GetRadius() * windowReSizeWidth);
 
     // Initialization player
+
+    player->SetPositionX(screenWidth * windowReSizeWidth / 2);
+    player->SetPositionY(screenHeight * windowReSizeHeight / 2);
 
     destroyedMeteorsCount = 0;
 
@@ -116,16 +123,16 @@ void Game::InitGame() {
         posx = GetRandomValue(0, screenWidth);
 
         while (!correctRange) {
-            if (posx > screenWidth / 2 - 150 && posx < screenWidth / 2 + 150) posx = GetRandomValue(0, screenWidth);
+            if (posx > ((screenWidth / 2 - 150) * windowReSizeHeight) && posx < ((screenWidth / 2 + 150) * windowReSizeHeight)) posx = GetRandomValue(0, screenWidth * windowReSizeWidth);
             else correctRange = true;
         }
 
         correctRange = false;
 
-        posy = GetRandomValue(0, screenHeight);
+        posy = GetRandomValue(0, screenHeight * windowReSizeHeight);
 
         while (!correctRange) {
-            if (posy > screenHeight / 2 - 150 && posy < screenHeight / 2 + 150)  posy = GetRandomValue(0, screenHeight);
+            if (posy > (screenHeight * windowReSizeHeight / 2 - 150 * windowReSizeHeight)  && posy < (screenHeight * windowReSizeHeight / 2 + 150 * windowReSizeHeight))  posy = GetRandomValue(0, screenHeight * windowReSizeHeight);
             else correctRange = true;
         }
 
@@ -137,14 +144,14 @@ void Game::InitGame() {
 
         while (!correctRange) {
             if (velx == 0 && vely == 0) {
-                velx = GetRandomValue(-meteorSpeed, meteorSpeed);
-                vely = GetRandomValue(-meteorSpeed, meteorSpeed);
+                velx = GetRandomValue(-meteorSpeed * windowReSizeWidth, meteorSpeed) ;
+                vely = GetRandomValue(-meteorSpeed * windowReSizeHeight, meteorSpeed) ;
             }
             else correctRange = true;
         }
 
-        bigMeteor[i].speed = { (float)velx * GetFrameTime(), (float)vely * GetFrameTime() };
-        bigMeteor[i].radius = 60;
+        bigMeteor[i].speed = { (float)velx * GetFrameTime() * windowReSizeWidth, (float)vely * GetFrameTime() * windowReSizeHeight };
+        bigMeteor[i].radius = 60 * windowReSizeWidth;
         bigMeteor[i].active = true;
         bigMeteor[i].rotation = GetRandomValue(0,340);
         bigMeteor[i].color = BLUE;
@@ -153,7 +160,7 @@ void Game::InitGame() {
     for (int i = 0; i < maxMediumMeteors; i++) {
         mediumMeteor[i].position = { -100, -100 };
         mediumMeteor[i].speed = { 0,0 };
-        mediumMeteor[i].radius = 40;
+        mediumMeteor[i].radius = 40 * windowReSizeWidth;
         mediumMeteor[i].active = false;
         mediumMeteor[i].color = BLUE;
         mediumMeteor[i].rotation = GetRandomValue(0, 340);
@@ -162,7 +169,7 @@ void Game::InitGame() {
     for (int i = 0; i < maxSmallMeteors; i++) {
         smallMeteor[i].position = { -100, -100 };
         smallMeteor[i].speed = { 0,0 };
-        smallMeteor[i].radius = 20;
+        smallMeteor[i].radius = 20 * windowReSizeWidth;
         smallMeteor[i].active = false;
         smallMeteor[i].color = BLUE;
         smallMeteor[i].rotation = GetRandomValue(0, 340);
@@ -172,12 +179,13 @@ void Game::InitGame() {
     smallMeteorsCount = 0;
     gameInited = true;
     scrolling = 0;
+  
     sightTexture = LoadTexture("sight.png");
     sightTexture.width = 30;
     sightTexture.height = 30;
     backgroundGameTexture = LoadTexture("background1.png");
-    backgroundGameTexture.width = GetScreenWidth();
-    backgroundGameTexture.height = GetScreenHeight();
+    backgroundGameTexture.width = screenWidth;
+    backgroundGameTexture.height = screenHeight;
     shipTexture = LoadTexture("Lv3.png");
     shipTexture.width = player->GetRadius();
     shipTexture.height = player->GetRadius();
@@ -186,16 +194,16 @@ void Game::InitGame() {
     bigMeteorsTexture.height = bigMeteor->radius;
     mediumMeteorsTexture = LoadTexture("meteors1.png");
     mediumMeteorsTexture.width = mediumMeteor->radius;
-    mediumMeteorsTexture.height =mediumMeteor->radius;
+    mediumMeteorsTexture.height = mediumMeteor->radius;
     smallMeteorsTexture = LoadTexture("meteors2.png");
     smallMeteorsTexture.width = smallMeteor->radius;
     smallMeteorsTexture.height = smallMeteor->radius;
     shieldTexture = LoadTexture("shieldPowerUp.png");
-    shieldTexture.width = 60;
-    shieldTexture.height = 60;
+    shieldTexture.width = 60 * windowReSizeWidth;
+    shieldTexture.height = 60 * windowReSizeHeight;
     moreBulletsTexture = LoadTexture("moreBulletsPowerUp.png");
-    moreBulletsTexture.width = 60;
-    moreBulletsTexture.height = 60;
+    moreBulletsTexture.width = 60 * windowReSizeWidth;
+    moreBulletsTexture.height = 60 * windowReSizeHeight;
     rightClickTexture = LoadTexture("rightClick.png");
     rightClickTexture.width = 80;
     rightClickTexture.height = 80;
@@ -203,51 +211,59 @@ void Game::InitGame() {
     leftClickTexture.width = 80;
     leftClickTexture.height = 80;
     buttonPauseTexture = LoadTexture("pause.png");
-    buttonPauseTexture.width = 100;
-    buttonPauseTexture.height = 100;
+    buttonPauseTexture.width = 100 * windowReSizeWidth;
+    buttonPauseTexture.height = 100 * windowReSizeHeight;
     buttonTexture = LoadTexture("button.png");
-    buttonTexture.width = 310;
-    buttonTexture.height = 100;
+    buttonTexture.width = 310 * windowReSizeWidth;
+    buttonTexture.height = 100 * windowReSizeHeight;
     buttonPushedTexture = LoadTexture("button_pushed.png");
-    buttonPushedTexture.width = 310;
-    buttonPushedTexture.height = 100;
-    buttonP = { buttonPause->GetPosition().x,buttonPause->GetPosition().y ,(float)buttonPause->GetWidth() ,(float)buttonPause->GetHeight() };
-    buttonResumeArea = { buttonResumePlayAgain->GetPosition().x,buttonResumePlayAgain->GetPosition().y,(float)buttonResumePlayAgain->GetWidth(),(float)buttonResumePlayAgain->GetHeight() };
-    buttonExitArea = { buttonMenuExit->GetPosition().x,buttonMenuExit->GetPosition().y,(float)buttonMenuExit->GetWidth(),(float)buttonMenuExit->GetHeight() };
-    backgroundGame->SetTextureData(backgroundGameTexture, 0, 0, backgroundGame->GetWidth(), backgroundGame->GetHeight());
-    shield->SetTextureData(shieldTexture, shieldPowerUp.position.x, shieldPowerUp.position.y, shieldTexture.width, shieldTexture.height);
-    moreBullets->SetTextureData(moreBulletsTexture, moreBulletsPowerUp.position.x, moreBulletsPowerUp.position.y, moreBulletsTexture.width, moreBulletsTexture.height);
-    rightClick->SetTextureData(rightClickTexture, GetScreenWidth() / 2 + 20, GetScreenHeight() - rightClickTexture.height - 20, rightClickTexture.width, rightClickTexture.height);
-    leftClick->SetTextureData(leftClickTexture, GetScreenWidth() / 2 - leftClickTexture.width - 20, GetScreenHeight() - leftClickTexture.height - 20, leftClickTexture.width, leftClickTexture.height);
-    buttonPause->SetTextureData(buttonPauseTexture, GetScreenWidth() - buttonPauseTexture.width, 0, buttonPauseTexture.width, buttonPauseTexture.height);
-    buttonResumePlayAgain->SetTextureData(buttonPushedTexture, GetScreenWidth() / 2 - buttonTexture.width - 20, GetScreenHeight() / 2 + 50, buttonTexture.width, buttonTexture.height);
-    buttonMenuExit->SetTextureData(buttonPushedTexture, GetScreenWidth() / 2 + 20, GetScreenHeight() / 2 + 50, buttonTexture.width, buttonTexture.height);
+    buttonPushedTexture.width = 310 * windowReSizeWidth;
+    buttonPushedTexture.height = 100 * windowReSizeHeight;
 
+
+    backgroundGame->SetTextureData(backgroundGameTexture, 0, 0, backgroundGame->GetWidth()*windowReSizeWidth, backgroundGame->GetHeight()* windowReSizeHeight);
+    shield->SetTextureData(shieldTexture, shieldPowerUp.position.x- shieldTexture.width/2, shieldPowerUp.position.y- shieldTexture.height/2, shieldTexture.width, shieldTexture.height);
+    moreBullets->SetTextureData(moreBulletsTexture, moreBulletsPowerUp.position.x- moreBulletsTexture.width/2, moreBulletsPowerUp.position.y- moreBulletsTexture.height/2, moreBulletsTexture.width, moreBulletsTexture.height);
+    rightClick->SetTextureData(rightClickTexture, (screenWidth* windowReSizeWidth / 2 + 20), (screenHeight* windowReSizeHeight - rightClickTexture.height * windowReSizeHeight - 20), rightClickTexture.width, rightClickTexture.height);
+    leftClick->SetTextureData(leftClickTexture, (screenWidth* windowReSizeWidth / 2 - leftClickTexture.width*windowReSizeWidth - 20), (screenHeight* windowReSizeHeight - leftClickTexture.height*windowReSizeHeight - 20), leftClickTexture.width, leftClickTexture.height);
+    buttonPause->SetTextureData(buttonPauseTexture, (screenWidth * windowReSizeWidth - buttonPauseTexture.width) , 0, buttonPauseTexture.width, buttonPauseTexture.height);
+    buttonResumePlayAgain->SetTextureData(buttonPushedTexture, (screenWidth * windowReSizeWidth / 2 - buttonTexture.width - 20 * windowReSizeWidth), screenHeight * windowReSizeHeight / 2 + 50 * windowReSizeHeight, buttonTexture.width, buttonTexture.height);
+    buttonMenuExit->SetTextureData(buttonPushedTexture, (screenWidth * windowReSizeWidth / 2 + 20* windowReSizeWidth), (screenHeight * windowReSizeHeight / 2 + 50* windowReSizeHeight), buttonTexture.width, buttonTexture.height);
+    buttonP = { buttonPause->GetPosition().x ,buttonPause->GetPosition().y ,(float)buttonPause->GetWidth(),(float)buttonPause->GetHeight() };
+    buttonResumeArea = { buttonResumePlayAgain->GetPosition().x,buttonResumePlayAgain->GetPosition().y,(float)buttonResumePlayAgain->GetWidth(),(float)buttonResumePlayAgain->GetHeight()};
+    buttonExitArea = { buttonMenuExit->GetPosition().x,buttonMenuExit->GetPosition().y,(float)buttonMenuExit->GetWidth(),(float)buttonMenuExit->GetHeight() };
+    PlayMusicStream(gameSong);
 }
 
 void Game::InputGame() {
     if (pause) {
         if (CheckCollisionPointRec(GetMousePosition(), buttonResumeArea) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
             pause = !pause;
+            PlaySound(confirmation);
         }
         if (CheckCollisionPointRec(GetMousePosition(), buttonExitArea) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
             goToMenu = true;
+            PlaySound(confirmation);
         }
     }
     if (victory) {
         if (CheckCollisionPointRec(GetMousePosition(), buttonResumeArea) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
             goToGame = true;
+            PlaySound(confirmation);
         }
         if (CheckCollisionPointRec(GetMousePosition(), buttonExitArea) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
             goToMenu = true;
+            PlaySound(confirmation);
         }
     }
     if (gameOver) {
         if (CheckCollisionPointRec(GetMousePosition(), buttonResumeArea) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
             goToGame = true;
+            PlaySound(confirmation);
         }
         if (CheckCollisionPointRec(GetMousePosition(), buttonExitArea) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
             goToMenu = true;
+            PlaySound(confirmation);
         }
     }
 }
@@ -255,9 +271,11 @@ void Game::InputGame() {
 
 
 void Game::UpdateGame() {
+    UpdateMusicStream(gameSong);
     if (!gameOver) {
         if (CheckCollisionPointRec(GetMousePosition(), buttonP) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && !victory) {
             pause = !pause;
+            PlaySound(confirmation);
         }
         if (!pause) {
 
@@ -272,29 +290,30 @@ void Game::UpdateGame() {
             }
             scrolling -= 0.5f;
             if (scrolling <= -backgroundGameTexture.width * 2) scrolling = 0;
-            ship->SetTextureData(shipTexture, player->GetPosition().x - player->GetRadius() / 2, player->GetPosition().y - player->GetRadius() / 2, player->GetRadius(), player->GetRadius());
+            ship->SetTextureData(shipTexture, (player->GetPosition().x - player->GetRadius()/ 2) * windowReSizeWidth, (player->GetPosition().y - player->GetRadius() / 2) * windowReSizeHeight, player->GetRadius(), player->GetRadius() );
             
             // Player logic: movement
             player->Movement();
 
             //Collision logic: player vs walls
-            if (player->GetPosition().x > screenWidth + player->GetRadius()) player->SetPositionX(-(player->GetRadius()));
-            else if (player->GetPosition().x < -(player->GetRadius())) player->SetPositionX(screenWidth + player->GetRadius());
-            if (player->GetPosition().y > (screenHeight + player->GetRadius())) player->SetPositionY(-(player->GetRadius()));
-            else if (player->GetPosition().y < -(player->GetRadius())) player->SetPositionY(screenHeight + player->GetRadius());
+            if (player->GetPosition().x > screenWidth * windowReSizeWidth + player->GetRadius()) player->SetPositionX(-(player->GetRadius()));
+            else if (player->GetPosition().x < -(player->GetRadius())) player->SetPositionX(screenWidth * windowReSizeWidth + player->GetRadius());
+            if (player->GetPosition().y > (screenHeight * windowReSizeHeight + player->GetRadius())) player->SetPositionY(-(player->GetRadius()));
+            else if (player->GetPosition().y < -(player->GetRadius())) player->SetPositionY(screenHeight * windowReSizeHeight + player->GetRadius());
 
             // Player shoot logic
             if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-                if (player->Vector2Length(player->Vector2Subtract(GetMousePosition(), player->GetPosition())) > 30.0f) {
+                if (player->Vector2Length(player->Vector2Subtract(GetMousePosition(), player->GetPosition())) > 30.0f * windowReSizeWidth) {
                     player->SetRotation(player->Vector2Angle(player->GetPosition(), GetMousePosition()) + 90);
                 }
                 for (int i = 0; i < (player->GetBullets() ? player->playerMaxShoots : player->playerMaxShoots / 2); i++) {
                     if (!shoots[i]->GetActive()) {
+                        PlaySound(laser);
                         shoots[i]->SetPositionX(player->GetPosition().x + (float)sin(player->GetRotation() * DEG2RAD) * (player->GetRadius()));
                         shoots[i]->SetPositionY(player->GetPosition().y - (float)cos(player->GetRotation() * DEG2RAD) * (player->GetRadius()));
                         shoots[i]->SetActive(true);
-                        shoots[i]->SetSpeedX(1.5 * (float)sin(player->GetRotation() * DEG2RAD) * player->playerSpeed);
-                        shoots[i]->SetSpeedY(1.5 * (float)cos(player->GetRotation() * DEG2RAD) * player->playerSpeed);
+                        shoots[i]->SetSpeedX(1.5 * (float)sin(player->GetRotation() * DEG2RAD) * player->playerSpeed * windowReSizeWidth);
+                        shoots[i]->SetSpeedY(1.5 * (float)cos(player->GetRotation() * DEG2RAD) * player->playerSpeed * windowReSizeWidth);
                         shoots[i]->SetRotation(player->GetRotation());
                         break;
                     };
@@ -315,10 +334,11 @@ void Game::UpdateGame() {
 
 
 
-            // Collision logic: player vs meteors
+           
 
             if (CheckCollisionCircles({ player->GetPosition().x, player->GetPosition().y }, player->GetRadius(), shieldPowerUp.position, shieldPowerUp.radius) && shieldPowerUp.active) {
                 player->SetShield(true);
+                PlaySound(shieldSound);
                 shieldPowerUp.active = false;
             }
 
@@ -328,7 +348,10 @@ void Game::UpdateGame() {
             }
 
             for (int a = 0; a < maxBigMeteors; a++) {
-                if (CheckCollisionCircles({ player->GetPosition().x, player->GetPosition().y }, player->GetRadius(), bigMeteor[a].position, bigMeteor[a].radius) && bigMeteor[a].active && !player->GetShield()) gameOver = true;
+                if (CheckCollisionCircles({ player->GetPosition().x, player->GetPosition().y }, player->GetRadius(), bigMeteor[a].position, bigMeteor[a].radius) && bigMeteor[a].active && !player->GetShield()) {
+                    gameOver = true;
+                    PlaySound(explosion);
+                }
                 else if (CheckCollisionCircles({ player->GetPosition().x, player->GetPosition().y }, player->GetRadius(), bigMeteor[a].position, bigMeteor[a].radius) && bigMeteor[a].active && player->GetShield()) {
                     bigMeteor[a].active = false;
                     destroyedMeteorsCount += 7;
@@ -337,7 +360,10 @@ void Game::UpdateGame() {
             }
 
             for (int a = 0; a < maxMediumMeteors; a++) {
-                if (CheckCollisionCircles({ player->GetPosition().x,  player->GetPosition().y }, player->GetRadius(), mediumMeteor[a].position, mediumMeteor[a].radius) && mediumMeteor[a].active && !player->GetShield()) gameOver = true;
+                if (CheckCollisionCircles({ player->GetPosition().x,  player->GetPosition().y }, player->GetRadius(), mediumMeteor[a].position, mediumMeteor[a].radius) && mediumMeteor[a].active && !player->GetShield()) {
+                    gameOver = true;
+                    PlaySound(explosion);
+                }
                 else if (CheckCollisionCircles({ player->GetPosition().x, player->GetPosition().y }, player->GetRadius(), mediumMeteor[a].position, mediumMeteor[a].radius) && mediumMeteor[a].active && player->GetShield()) {
                     mediumMeteor[a].active = false;
                     destroyedMeteorsCount += 3;
@@ -345,7 +371,10 @@ void Game::UpdateGame() {
                 }
             }
             for (int a = 0; a < maxSmallMeteors; a++) {
-                if (CheckCollisionCircles({ player->GetPosition().x,  player->GetPosition().y }, player->GetRadius(), smallMeteor[a].position, smallMeteor[a].radius) && smallMeteor[a].active && !player->GetShield()) gameOver = true;
+                if (CheckCollisionCircles({ player->GetPosition().x,  player->GetPosition().y }, player->GetRadius(), smallMeteor[a].position, smallMeteor[a].radius) && smallMeteor[a].active && !player->GetShield()) {
+                    gameOver = true;
+                    PlaySound(explosion);
+                }
                 else if (CheckCollisionCircles({ player->GetPosition().x, player->GetPosition().y }, player->GetRadius(), smallMeteor[a].position, smallMeteor[a].radius) && smallMeteor[a].active && player->GetShield()) {
                     smallMeteor[a].active = false;
                     destroyedMeteorsCount += 1;
@@ -359,12 +388,11 @@ void Game::UpdateGame() {
                     // Movement
                     bigMeteor[i].position.x += bigMeteor[i].speed.x;
                     bigMeteor[i].position.y += bigMeteor[i].speed.y;
-
                     // Collision logic: meteor vs wall
-                    if (bigMeteor[i].position.x > screenWidth + bigMeteor[i].radius) bigMeteor[i].position.x = -(bigMeteor[i].radius);
-                    else if (bigMeteor[i].position.x < 0 - bigMeteor[i].radius) bigMeteor[i].position.x = screenWidth + bigMeteor[i].radius;
-                    if (bigMeteor[i].position.y > screenHeight + bigMeteor[i].radius) bigMeteor[i].position.y = -(bigMeteor[i].radius);
-                    else if (bigMeteor[i].position.y < 0 - bigMeteor[i].radius) bigMeteor[i].position.y = screenHeight + bigMeteor[i].radius;
+                    if (bigMeteor[i].position.x > screenWidth * windowReSizeWidth + bigMeteor[i].radius) bigMeteor[i].position.x = -(bigMeteor[i].radius);
+                    else if (bigMeteor[i].position.x < 0 - bigMeteor[i].radius) bigMeteor[i].position.x = screenWidth * windowReSizeWidth + bigMeteor[i].radius;
+                    if (bigMeteor[i].position.y > screenHeight * windowReSizeHeight + bigMeteor[i].radius) bigMeteor[i].position.y = -(bigMeteor[i].radius);
+                    else if (bigMeteor[i].position.y < 0 - bigMeteor[i].radius) bigMeteor[i].position.y = screenHeight * windowReSizeHeight + bigMeteor[i].radius;
                 }
             }
 
@@ -376,10 +404,10 @@ void Game::UpdateGame() {
                     mediumMeteor[i].position.y += mediumMeteor[i].speed.y * 3;
 
                     // Collision logic: meteor vs wall
-                    if (mediumMeteor[i].position.x > screenWidth + mediumMeteor[i].radius) mediumMeteor[i].position.x = -(mediumMeteor[i].radius);
-                    else if (mediumMeteor[i].position.x < 0 - mediumMeteor[i].radius) mediumMeteor[i].position.x = screenWidth + mediumMeteor[i].radius;
-                    if (mediumMeteor[i].position.y > screenHeight + mediumMeteor[i].radius) mediumMeteor[i].position.y = -(mediumMeteor[i].radius);
-                    else if (mediumMeteor[i].position.y < 0 - mediumMeteor[i].radius) mediumMeteor[i].position.y = screenHeight + mediumMeteor[i].radius;
+                    if (mediumMeteor[i].position.x > screenWidth * windowReSizeWidth + mediumMeteor[i].radius) mediumMeteor[i].position.x = -(mediumMeteor[i].radius);
+                    else if (mediumMeteor[i].position.x < 0 - mediumMeteor[i].radius) mediumMeteor[i].position.x = screenWidth * windowReSizeWidth + mediumMeteor[i].radius;
+                    if (mediumMeteor[i].position.y > screenHeight * windowReSizeHeight + mediumMeteor[i].radius) mediumMeteor[i].position.y = -(mediumMeteor[i].radius);
+                    else if (mediumMeteor[i].position.y < 0 - mediumMeteor[i].radius) mediumMeteor[i].position.y = screenHeight * windowReSizeHeight + mediumMeteor[i].radius;
                 }
             }
 
@@ -391,10 +419,10 @@ void Game::UpdateGame() {
                     smallMeteor[i].position.y += smallMeteor[i].speed.y * 5;
 
                     // Collision logic: meteor vs wall
-                    if (smallMeteor[i].position.x > screenWidth + smallMeteor[i].radius) smallMeteor[i].position.x = -(smallMeteor[i].radius);
-                    else if (smallMeteor[i].position.x < 0 - smallMeteor[i].radius) smallMeteor[i].position.x = screenWidth + smallMeteor[i].radius;
-                    if (smallMeteor[i].position.y > screenHeight + smallMeteor[i].radius) smallMeteor[i].position.y = -(smallMeteor[i].radius);
-                    else if (smallMeteor[i].position.y < 0 - smallMeteor[i].radius) smallMeteor[i].position.y = screenHeight + smallMeteor[i].radius;
+                    if (smallMeteor[i].position.x > screenWidth * windowReSizeWidth + smallMeteor[i].radius) smallMeteor[i].position.x = -(smallMeteor[i].radius);
+                    else if (smallMeteor[i].position.x < 0 - smallMeteor[i].radius) smallMeteor[i].position.x = screenWidth * windowReSizeWidth + smallMeteor[i].radius;
+                    if (smallMeteor[i].position.y > screenHeight * windowReSizeHeight + smallMeteor[i].radius) smallMeteor[i].position.y = -(smallMeteor[i].radius);
+                    else if (smallMeteor[i].position.y < 0 - smallMeteor[i].radius) smallMeteor[i].position.y = screenHeight * windowReSizeHeight + smallMeteor[i].radius;
                 }
             }
 
@@ -403,6 +431,7 @@ void Game::UpdateGame() {
                 if ((shoots[i]->GetActive())) {
                     for (int a = 0; a < maxBigMeteors; a++) {
                         if (bigMeteor[a].active && CheckCollisionCircles(shoots[i]->GetPosition(), shoots[i]->GetRadius(), bigMeteor[a].position, bigMeteor[a].radius)) {
+                            PlaySound(explosion);
                             shoots[i]->SetActive(false);
                             shoots[i]->SetLifeSpawn(0);
                             bigMeteor[a].active = false;
@@ -428,6 +457,7 @@ void Game::UpdateGame() {
 
                     for (int b = 0; b < maxMediumMeteors; b++) {
                         if (mediumMeteor[b].active && CheckCollisionCircles(shoots[i]->GetPosition(), shoots[i]->GetRadius(), mediumMeteor[b].position, mediumMeteor[b].radius)) {
+                            PlaySound(explosion);
                             shoots[i]->SetActive(false);
                             shoots[i]->SetLifeSpawn(0);
                             mediumMeteor[b].active = false;
@@ -453,6 +483,7 @@ void Game::UpdateGame() {
 
                     for (int c = 0; c < maxSmallMeteors; c++) {
                         if (smallMeteor[c].active && CheckCollisionCircles(shoots[i]->GetPosition(), shoots[i]->GetRadius(), smallMeteor[c].position, smallMeteor[c].radius)) {
+                            PlaySound(explosion);
                             shoots[i]->SetActive(false);
                             shoots[i]->SetLifeSpawn(0);
                             smallMeteor[c].active = false;
@@ -521,76 +552,77 @@ void Game::DrawGame() {
         DrawTextureRec(leftClickTexture, leftClick->GetFrameRec(), leftClick->GetPosition(), WHITE);
         DrawTextureRec(buttonPauseTexture, buttonPause->GetFrameRec(), buttonPause->GetPosition(), WHITE);
         if (victory) {
-            { DrawText("VICTORY", screenWidth / 2 - MeasureText("VICTORY", 80) / 2, screenHeight / 2 - 40, 80, LIGHTGRAY); }
+            { DrawText("VICTORY", screenWidth * windowReSizeWidth / 2 - MeasureText("VICTORY", 75 * windowReSizeHeight) / 2, screenHeight * windowReSizeHeight / 2 - 40 * windowReSizeHeight, 80 * windowReSizeHeight, LIGHTGRAY); }
             if (CheckCollisionPointRec(GetMousePosition(), buttonResumeArea)) {
                 buttonResumePlayAgain->SetTexture(buttonTexture);
                 DrawTextureRec(buttonTexture, buttonResumePlayAgain->GetFrameRec(), buttonResumePlayAgain->GetPosition(), WHITE);
-                DrawText("PLAY AGAIN", 415, 470, 30, SKYBLUE);
+                DrawText("PLAY AGAIN", 415 * windowReSizeWidth, 470 * windowReSizeHeight, 25 * windowReSizeHeight, SKYBLUE);
             }
             else {
                 buttonResumePlayAgain->SetTexture(buttonPushedTexture);
                 DrawTextureRec(buttonPushedTexture, buttonResumePlayAgain->GetFrameRec(), buttonResumePlayAgain->GetPosition(), WHITE);
-                DrawText("PLAY AGAIN", 415, 470, 30, DARKGRAY);
+                DrawText("PLAY AGAIN", 415 * windowReSizeWidth, 470 * windowReSizeHeight, 25 * windowReSizeHeight, DARKGRAY);
             }
             if (CheckCollisionPointRec(GetMousePosition(), buttonExitArea)) {
                 buttonMenuExit->SetTexture(buttonTexture);
                 DrawTextureRec(buttonTexture, buttonMenuExit->GetFrameRec(), buttonMenuExit->GetPosition(), WHITE);
-                DrawText("MENU", 810, 470, 30, SKYBLUE);
+                DrawText("MENU", 810 * windowReSizeWidth, 470 * windowReSizeHeight, 25 * windowReSizeHeight, SKYBLUE);
             }
             else {
                 buttonMenuExit->SetTexture(buttonPushedTexture);
                 DrawTextureRec(buttonPushedTexture, buttonMenuExit->GetFrameRec(), buttonMenuExit->GetPosition(), WHITE);
-                DrawText("MENU", 810, 470, 30, DARKGRAY);
+                DrawText("MENU", 810 * windowReSizeWidth, 470 * windowReSizeHeight, 25 * windowReSizeHeight, DARKGRAY);
             }
         }
 
         if (pause) {
-            DrawText("GAME PAUSED", screenWidth / 2 - MeasureText("GAME PAUSED", 40) / 2, screenHeight / 2 - 40, 40, WHITE); 
+            DrawText("GAME PAUSED", screenWidth * windowReSizeWidth / 2 - MeasureText("GAME PAUSED", 40 * windowReSizeHeight) / 2, screenHeight *windowReSizeHeight / 2 - 40 * windowReSizeHeight, 40 * windowReSizeHeight, WHITE);
             if (CheckCollisionPointRec(GetMousePosition(), buttonResumeArea)) {
                 buttonResumePlayAgain->SetTexture(buttonTexture);
                 DrawTextureRec(buttonTexture, buttonResumePlayAgain->GetFrameRec(), buttonResumePlayAgain->GetPosition(), WHITE);
-                DrawText("RESUME", 440, 470, 30, SKYBLUE);
+                DrawText("RESUME", 440 * windowReSizeWidth, 470 * windowReSizeHeight, 25 * windowReSizeHeight, SKYBLUE);
             }
             else {
                 buttonResumePlayAgain->SetTexture(buttonPushedTexture);
                 DrawTextureRec(buttonPushedTexture, buttonResumePlayAgain->GetFrameRec(), buttonResumePlayAgain->GetPosition(), WHITE);
-                DrawText("RESUME", 440, 470, 30, DARKGRAY);
+                DrawText("RESUME", 440 * windowReSizeWidth, 470 * windowReSizeHeight, 25 * windowReSizeHeight, DARKGRAY);
             }
             if (CheckCollisionPointRec(GetMousePosition(), buttonExitArea)) {
                 buttonMenuExit->SetTexture(buttonTexture);
                 DrawTextureRec(buttonTexture, buttonMenuExit->GetFrameRec(), buttonMenuExit->GetPosition(), WHITE);
-                DrawText("MENU", 810, 470, 30, SKYBLUE);
+                DrawText("MENU", 810 * windowReSizeWidth, 470 * windowReSizeHeight, 25 * windowReSizeHeight, SKYBLUE);
             }
             else {
                 buttonMenuExit->SetTexture(buttonPushedTexture);
                 DrawTextureRec(buttonPushedTexture, buttonMenuExit->GetFrameRec(), buttonMenuExit->GetPosition(), WHITE);
-                DrawText("MENU", 810, 470, 30, DARKGRAY);
+                DrawText("MENU", 810 * windowReSizeWidth, 470 * windowReSizeHeight, 25 * windowReSizeHeight, DARKGRAY);
             }            
         }
     }
     else {
-        DrawText("DEFEAT", screenWidth / 2 - MeasureText("DEFEAT", 80) / 2, screenHeight / 2 - 40, 80, LIGHTGRAY);
+        DrawText("DEFEAT", screenWidth * windowReSizeWidth / 2 - MeasureText("DEFEAT", 75 * windowReSizeHeight) / 2, screenHeight * windowReSizeHeight / 2 - 40 * windowReSizeHeight, 80 * windowReSizeHeight, LIGHTGRAY);
         if (CheckCollisionPointRec(GetMousePosition(), buttonResumeArea)) {
             buttonResumePlayAgain->SetTexture(buttonTexture);
             DrawTextureRec(buttonTexture, buttonResumePlayAgain->GetFrameRec(), buttonResumePlayAgain->GetPosition(), WHITE);
-            DrawText("TRY AGAIN", 420, 470, 30, SKYBLUE);
+            DrawText("TRY AGAIN", 420 * windowReSizeWidth, 470 * windowReSizeHeight, 25 * windowReSizeHeight, SKYBLUE);
         }
         else {
             buttonResumePlayAgain->SetTexture(buttonPushedTexture);
             DrawTextureRec(buttonPushedTexture, buttonResumePlayAgain->GetFrameRec(), buttonResumePlayAgain->GetPosition(), WHITE);
-            DrawText("TRY AGAIN", 420, 470, 30, DARKGRAY);
+            DrawText("TRY AGAIN", 420 * windowReSizeWidth, 470 * windowReSizeHeight, 25 * windowReSizeHeight, DARKGRAY);
         }
         if (CheckCollisionPointRec(GetMousePosition(), buttonExitArea)) {
             buttonMenuExit->SetTexture(buttonTexture);
             DrawTextureRec(buttonTexture, buttonMenuExit->GetFrameRec(), buttonMenuExit->GetPosition(), WHITE);
-            DrawText("MENU", 810, 470, 30, SKYBLUE);
+            DrawText("MENU", 810 * windowReSizeWidth, 470 * windowReSizeHeight, 25 * windowReSizeHeight, SKYBLUE);
         }
         else {
             buttonMenuExit->SetTexture(buttonPushedTexture);
             DrawTextureRec(buttonPushedTexture, buttonMenuExit->GetFrameRec(), buttonMenuExit->GetPosition(), WHITE);
-            DrawText("MENU", 810, 470, 30, DARKGRAY);
+            DrawText("MENU", 810 * windowReSizeWidth, 470 * windowReSizeHeight, 25 * windowReSizeHeight, DARKGRAY);
         }
         DrawTextureEx(sightTexture, { GetMousePosition().x - sightTexture.width / 2,GetMousePosition().y - sightTexture.height / 2 }, 0.0f, 1.0f, WHITE);
+
     }
 
     EndDrawing();

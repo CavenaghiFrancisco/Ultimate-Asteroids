@@ -32,6 +32,7 @@ public:
     float GetRotation();
     void SetRotation(float _rotation);
     float GetRadius();
+    void SetRadius(float r);
     void SetPositionX(float positionx);
     void SetPositionY(float positiony);
     void SetShield(bool shield);
