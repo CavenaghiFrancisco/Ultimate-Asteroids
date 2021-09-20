@@ -103,6 +103,7 @@ void Game::InitGame() {
     confirmation = LoadSound("confirmation.ogg");
     shieldSound = LoadSound("shield.ogg");
     laser = LoadSound("laser.ogg");
+    explosion = LoadSound("explosion.ogg");
     gameSong = LoadMusicStream("gameSong.mp3");
     
     player->SetRadius(player->GetRadius() * windowReSizeWidth);
