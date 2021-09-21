@@ -5,9 +5,7 @@
 Player::Player() {
     
     position = { (float)screenWidth / 2, (float)screenHeight / 2};
-    collider = { position.x,position.y };
     radius = 40;
-    speed = { 0, 0 };
     acceleration = { 0,0 };
     direction = { 0,0 };
     rotation = 0;
@@ -35,21 +33,12 @@ float Player::Vector2Angle(Vector2 v1, Vector2 v2) {
     return result;
 }
 
-
-Vector2 Player::GetSpeed() {
-	return speed;
-}
-
 void Player::Movement() {
     direction.x = GetMousePosition().x - position.x;
     direction.y = GetMousePosition().y - position.y;
-
-    
+        
     rotation = Vector2Angle(position, GetMousePosition()) + 90;
     
-
-    
-
     if (IsMouseButtonDown(MOUSE_RIGHT_BUTTON)) {
         acceleration.x += direction.x / (sqrt((direction.x * direction.x) + direction.y * direction.y));
         acceleration.y += direction.y / (sqrt((direction.x * direction.x) + direction.y * direction.y));

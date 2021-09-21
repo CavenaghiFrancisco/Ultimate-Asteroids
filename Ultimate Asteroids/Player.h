@@ -5,14 +5,11 @@
 class Player {
 private:
 	Vector2 position;
-    Vector2 speed;
     Vector2 acceleration;
     Vector2 direction;
     float rotation;
-    Vector2 collider;
     float radius;
     Color color;
-    float shipHeight;
     bool shield;
     bool bullet;
 public:
@@ -24,8 +21,6 @@ public:
     const int screenHeight = 768;
     Player();
     ~Player();
-    Vector2 GetSpeed();
-    float GetAcceleration();
     Vector2 GetPosition();
     void DrawPlayer();
     void Movement();

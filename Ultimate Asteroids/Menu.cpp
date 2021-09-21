@@ -43,16 +43,16 @@ Menu::~Menu() {
 void Menu::Init() {
 	SetTargetFPS(60);
 	InitAudioDevice();
-	backgroundTexture = LoadTexture("background1.png");
-	buttonTexture = LoadTexture("button.png");
-	buttonPushedTexture = LoadTexture("button_pushed.png");
-	titleTexture = LoadTexture("title.png");
-	returnButtonTexture = LoadTexture("returnButton.png");
-	creditsTexture = LoadTexture("credits1.png");
-	menuSong = LoadMusicStream("menuSong.mp3");
+	backgroundTexture = LoadTexture("assets/background1.png");
+	buttonTexture = LoadTexture("assets/button.png");
+	buttonPushedTexture = LoadTexture("assets/button_pushed.png");
+	titleTexture = LoadTexture("assets/title.png");
+	returnButtonTexture = LoadTexture("assets/returnButton.png");
+	creditsTexture = LoadTexture("assets/credits1.png");
+	menuSong = LoadMusicStream("assets/menuSong.mp3");
 	scrolling = 0.0f;
 	menuInited = true;
-	confirmation = LoadSound("confirmation.ogg");
+	confirmation = LoadSound("assets/confirmation.ogg");
 	
 }
 
@@ -116,10 +116,6 @@ void Menu::Update() {
 	creditsTexture.width = screenWidth * windowReSizeWidth;
 	creditsTexture.height = screenHeight * windowReSizeHeight;
 	returnButtonArea = { (screenWidth - (float)returnButtonTexture.width - 100) * windowReSizeWidth , (screenHeight - (float)returnButtonTexture.height - 50) * windowReSizeHeight   , ((float)returnButtonTexture.width) * windowReSizeWidth,(float)returnButtonTexture.height * windowReSizeHeight };
-
-
-
-
 
 
 	background->SetTextureData(backgroundTexture, 0, 0, backgroundTexture.width * windowReSizeWidth, backgroundTexture.height * windowReSizeHeight);
@@ -188,7 +184,6 @@ void Menu::Draw() {
 		}
 	}
 	else{
-		//DrawRectangle(returnButtonArea.x, returnButtonArea.y, returnButtonArea.width, returnButtonArea.height,RED);
 		DrawTextureRec(credits->GetTexture(), credits->GetFrameRec(), credits->GetPosition(), WHITE);
 		DrawTextureRec(returnButton->GetTexture(), returnButton->GetFrameRec(), returnButton->GetPosition(), WHITE);
 	}

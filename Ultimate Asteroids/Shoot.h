@@ -5,9 +5,9 @@ private:
     Vector2 position;
     Vector2 speed;
     float radius;
-    float rotation;
     int lifeSpawn;
     bool active;
+    float rotation;
     Color color;
 public:
     const float screenWidth = 1366;
@@ -22,13 +22,13 @@ public:
     void SetSpeedY(float _speedy);
     float GetRadius();
     void SetRadius(float _radius);
-    float GetRotation();
-    void SetRotation(float _rotation);
     int GetLifeSpawn();
     void SetLifeSpawn(float _lifespawn);
     bool GetActive();
     void SetActive(float _active);
     void LifeTimer();
     void Shot();
+    void SetRotation(float r);
+    float GetRotation();
 };
 

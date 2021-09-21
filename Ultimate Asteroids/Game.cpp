@@ -3,7 +3,7 @@
 
 
 
-const int maxBigMeteors = 8;
+const int maxBigMeteors = 10;
 const int maxMediumMeteors = maxBigMeteors * 2;
 const int maxSmallMeteors = maxMediumMeteors * 2;
 const int meteorSpeed = 40;
@@ -100,11 +100,11 @@ void Game::InitGame() {
     victory = false;
     pause = false;
     timerPowerUp = 0.0f;
-    confirmation = LoadSound("confirmation.ogg");
-    shieldSound = LoadSound("shield.ogg");
-    laser = LoadSound("laser.ogg");
-    explosion = LoadSound("explosion.ogg");
-    gameSong = LoadMusicStream("gameSong.mp3");
+    confirmation = LoadSound("assets/confirmation.ogg");
+    shieldSound = LoadSound("assets/shield.ogg");
+    laser = LoadSound("assets/laser.ogg");
+    explosion = LoadSound("assets/explosion.ogg");
+    gameSong = LoadMusicStream("assets/gameSong.mp3");
     
     player->SetRadius(player->GetRadius() * windowReSizeWidth);
 
@@ -181,43 +181,43 @@ void Game::InitGame() {
     gameInited = true;
     scrolling = 0;
   
-    sightTexture = LoadTexture("sight.png");
+    sightTexture = LoadTexture("assets/sight.png");
     sightTexture.width = 30;
     sightTexture.height = 30;
-    backgroundGameTexture = LoadTexture("background1.png");
+    backgroundGameTexture = LoadTexture("assets/background1.png");
     backgroundGameTexture.width = screenWidth;
     backgroundGameTexture.height = screenHeight;
-    shipTexture = LoadTexture("Lv3.png");
+    shipTexture = LoadTexture("assets/Lv3.png");
     shipTexture.width = player->GetRadius();
     shipTexture.height = player->GetRadius();
-    bigMeteorsTexture = LoadTexture("meteors0.png");
+    bigMeteorsTexture = LoadTexture("assets/meteors0.png");
     bigMeteorsTexture.width = bigMeteor->radius;
     bigMeteorsTexture.height = bigMeteor->radius;
-    mediumMeteorsTexture = LoadTexture("meteors1.png");
+    mediumMeteorsTexture = LoadTexture("assets/meteors1.png");
     mediumMeteorsTexture.width = mediumMeteor->radius;
     mediumMeteorsTexture.height = mediumMeteor->radius;
-    smallMeteorsTexture = LoadTexture("meteors2.png");
+    smallMeteorsTexture = LoadTexture("assets/meteors2.png");
     smallMeteorsTexture.width = smallMeteor->radius;
     smallMeteorsTexture.height = smallMeteor->radius;
-    shieldTexture = LoadTexture("shieldPowerUp.png");
+    shieldTexture = LoadTexture("assets/shieldPowerUp.png");
     shieldTexture.width = 60 * windowReSizeWidth;
     shieldTexture.height = 60 * windowReSizeHeight;
-    moreBulletsTexture = LoadTexture("moreBulletsPowerUp.png");
+    moreBulletsTexture = LoadTexture("assets/moreBulletsPowerUp.png");
     moreBulletsTexture.width = 60 * windowReSizeWidth;
     moreBulletsTexture.height = 60 * windowReSizeHeight;
-    rightClickTexture = LoadTexture("rightClick.png");
+    rightClickTexture = LoadTexture("assets/rightClick.png");
     rightClickTexture.width = 80;
     rightClickTexture.height = 80;
-    leftClickTexture = LoadTexture("leftClick.png");
+    leftClickTexture = LoadTexture("assets/leftClick.png");
     leftClickTexture.width = 80;
     leftClickTexture.height = 80;
-    buttonPauseTexture = LoadTexture("pause.png");
+    buttonPauseTexture = LoadTexture("assets/pause.png");
     buttonPauseTexture.width = 100 * windowReSizeWidth;
     buttonPauseTexture.height = 100 * windowReSizeHeight;
-    buttonTexture = LoadTexture("button.png");
+    buttonTexture = LoadTexture("assets/button.png");
     buttonTexture.width = 310 * windowReSizeWidth;
     buttonTexture.height = 100 * windowReSizeHeight;
-    buttonPushedTexture = LoadTexture("button_pushed.png");
+    buttonPushedTexture = LoadTexture("assets/button_pushed.png");
     buttonPushedTexture.width = 310 * windowReSizeWidth;
     buttonPushedTexture.height = 100 * windowReSizeHeight;
 

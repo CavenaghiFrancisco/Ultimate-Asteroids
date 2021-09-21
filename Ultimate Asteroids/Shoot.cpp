@@ -44,14 +44,6 @@ void Shoot::SetRadius(float _radius) {
     radius = _radius;
 }
 
-float Shoot::GetRotation() {
-    return rotation;
-}
-
-void Shoot::SetRotation(float _rotation) {
-    rotation = _rotation;
-}
-
 int Shoot::GetLifeSpawn() {
     return lifeSpawn;
 }
@@ -71,6 +63,8 @@ void Shoot::SetActive(float _active) {
 void Shoot::LifeTimer() {
         if (active) lifeSpawn += GetFrameTime();
 }
+
+
 
 void Shoot::Shot() {
     if (active) {
@@ -104,5 +98,13 @@ void Shoot::Shot() {
             active = false;
         }
     }
+}
+
+void Shoot::SetRotation(float r) {
+    rotation = r;
+}
+
+float Shoot::GetRotation() {
+    return rotation;
 }
 

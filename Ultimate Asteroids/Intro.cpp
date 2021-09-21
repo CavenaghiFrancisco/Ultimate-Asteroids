@@ -3,8 +3,8 @@
 Intro::Intro() {
 	InitWindow(screenWidth, screenHeight, "Ultimate Asteroid");
 	InitAudioDevice();
-	introLogoAudio = LoadMusicStream("hoho1.mp3");
-	logoTexture = LoadTexture("gamingdummies.png");
+	introLogoAudio = LoadMusicStream("assets/hoho1.mp3");
+	logoTexture = LoadTexture("assets/gamingdummies.png");
 	logo = new Textures();
 	logoTexture.width = 600;
 	logoTexture.height = 700;
