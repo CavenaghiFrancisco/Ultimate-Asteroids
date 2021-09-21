@@ -1,5 +1,3 @@
-#include "raylib.h"
-#include <math.h>
 #include "intro.h"
 
 void main() {

@@ -1,8 +1,8 @@
 #pragma once
 #include "raylib.h"
 #include <string>
-#include "Textures.h"
-#include "GameManager.h"
+#include "../Scenes/Gameplay/Objects/Textures.h"
+#include "../Scenes/GameManager.h"
 
 using namespace std;
 

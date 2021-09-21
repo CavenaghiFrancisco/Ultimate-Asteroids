@@ -1,7 +1,7 @@
 #pragma once
-#include "Textures.h"
-#include "Player.h"
-#include "Shoot.h"
+#include "Objects/Textures.h"
+#include "Objects/Player.h"
+#include "Objects/Shoot.h"
 
 struct PowerUp {
 	Vector2 position;

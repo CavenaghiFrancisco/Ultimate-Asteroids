@@ -1,6 +1,6 @@
 #pragma once
-#include "Menu.h"
-#include "Game.h"
+#include "Menu/Menu.h"
+#include "Gameplay/Game.h"
 
 enum class STATES { MENU, EXIT, GAME,SHOP };
 

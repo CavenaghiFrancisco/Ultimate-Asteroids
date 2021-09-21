@@ -18,6 +18,25 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\src\Intro\Intro.cpp" />
+    <ClCompile Include="..\src\Intro\Ultimate Asteroids.cpp" />
+    <ClCompile Include="..\src\Scenes\GameManager.cpp" />
+    <ClCompile Include="..\src\Scenes\Gameplay\Game.cpp" />
+    <ClCompile Include="..\src\Scenes\Gameplay\Objects\Player.cpp" />
+    <ClCompile Include="..\src\Scenes\Gameplay\Objects\Shoot.cpp" />
+    <ClCompile Include="..\src\Scenes\Gameplay\Objects\Textures.cpp" />
+    <ClCompile Include="..\src\Scenes\Menu\Menu.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\src\Intro\Intro.h" />
+    <ClInclude Include="..\src\Scenes\GameManager.h" />
+    <ClInclude Include="..\src\Scenes\Gameplay\Game.h" />
+    <ClInclude Include="..\src\Scenes\Gameplay\Objects\Player.h" />
+    <ClInclude Include="..\src\Scenes\Gameplay\Objects\Shoot.h" />
+    <ClInclude Include="..\src\Scenes\Gameplay\Objects\Textures.h" />
+    <ClInclude Include="..\src\Scenes\Menu\Menu.h" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
@@ -157,25 +176,6 @@ XCOPY "$(ProjectDir)assets" "$(TargetDir)assets" /e /h /y /s
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="Game.cpp" />
-    <ClCompile Include="GameManager.cpp" />
-    <ClCompile Include="Intro.cpp" />
-    <ClCompile Include="Menu.cpp" />
-    <ClCompile Include="Player.cpp" />
-    <ClCompile Include="Shoot.cpp" />
-    <ClCompile Include="Textures.cpp" />
-    <ClCompile Include="Ultimate Asteroids.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="Game.h" />
-    <ClInclude Include="GameManager.h" />
-    <ClInclude Include="Intro.h" />
-    <ClInclude Include="Menu.h" />
-    <ClInclude Include="Player.h" />
-    <ClInclude Include="Shoot.h" />
-    <ClInclude Include="Textures.h" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
