@@ -1,7 +1,5 @@
 #include "Game.h"
-#include <math.h>
-
-
+#include <cmath>
 
 const int maxBigMeteors = 10;
 const int maxMediumMeteors = maxBigMeteors * 2;
@@ -83,6 +81,11 @@ Game::~Game() {
     UnloadTexture(leftClickTexture);
     UnloadTexture(buttonTexture);
     UnloadTexture(buttonPushedTexture);
+    UnloadSound(confirmation);
+    UnloadSound(shieldSound);
+    UnloadSound(laser);
+    UnloadSound(explosion);
+    UnloadMusicStream(gameSong);
 }
 
 bool Game::GetInited() {

@@ -26,6 +26,8 @@ Menu::~Menu() {
 	UnloadTexture(titleTexture);
 	UnloadTexture(returnButtonTexture);
 	UnloadTexture(creditsTexture);
+	UnloadSound(confirmation);
+	UnloadMusicStream(menuSong);
 	delete title;
 	delete button0Pushed;
 	delete button1Pushed;

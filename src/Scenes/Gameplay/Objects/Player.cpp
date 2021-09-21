@@ -1,7 +1,6 @@
 #include "Player.h"
 
 
-
 Player::Player() {
     
     position = { (float)screenWidth / 2, (float)screenHeight / 2};

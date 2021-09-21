@@ -1,4 +1,4 @@
-#include "intro.h"
+#include "Intro.h"
 
 void main() {
 	Intro* intro = new Intro();
